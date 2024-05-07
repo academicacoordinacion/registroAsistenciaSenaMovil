@@ -80,7 +80,7 @@ class InicioSesion extends StatelessWidget {
       final loginResponse = LoginResponse.fromJson(response.data);
       Navigator.push (
         context,
-        MaterialPageRoute(builder: (context) => const DashboardScreen())
+        MaterialPageRoute(builder: (context) => DashboardScreen(loginResponse: loginResponse ,))
       );
       print(loginResponse);
 
