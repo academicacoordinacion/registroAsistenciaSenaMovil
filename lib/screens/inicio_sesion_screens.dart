@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
+import 'package:registro_asistencia_sena_movil/screens/dashboard_screens.dart';
 import 'package:registro_asistencia_sena_movil/utils/constantes.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -57,7 +58,7 @@ class InicioSesion extends StatelessWidget {
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () {
-                    login(_email.text, _password.text);
+                    login(_email.text, _password.text, context);
                   },
                   child: const Text('Iniciar sesión'),
                 ),
@@ -69,7 +70,7 @@ class InicioSesion extends StatelessWidget {
     );
   }
 
-  void login(String email, String password) async {
+  void login(String email, String password, BuildContext context) async {
     final dio = Dio();
     try {
 
@@ -77,6 +78,10 @@ class InicioSesion extends StatelessWidget {
     print(response);
     if(response.statusCode == 200){
       final loginResponse = LoginResponse.fromJson(response.data);
+      Navigator.push (
+        context,
+        MaterialPageRoute(builder: (context) => const DashboardScreen())
+      );
       print(loginResponse);
 
 
