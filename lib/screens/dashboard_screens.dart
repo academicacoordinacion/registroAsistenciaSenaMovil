@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
+import 'package:registro_asistencia_sena_movil/screens/fichas_caracterizacion/index_screens.dart';
 import 'package:registro_asistencia_sena_movil/widgets/footer.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
 
@@ -46,7 +47,12 @@ class DashboardScreen extends StatelessWidget {
                         "Recuerda que primero debes ingresar la ficha de caracterización y luego escanear el código QR para tomar la asistencia a la hora de la entrada y de la salida."),
                         const SizedBox(height: 20),
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => IndexFichaCaracterizacion(loginResponse: loginResponse,)));
+                        },
                         child: const Text('Comencemos'),
                       ),
                     ],

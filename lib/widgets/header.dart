@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
+import 'package:registro_asistencia_sena_movil/screens/dashboard_screens.dart';
 import 'package:registro_asistencia_sena_movil/screens/inicio_sesion_screens.dart';
 import 'package:registro_asistencia_sena_movil/utils/constantes.dart';
 class Header extends StatelessWidget {
@@ -17,7 +18,14 @@ class Header extends StatelessWidget {
     return AppBar(
       // title: const Text('Bienvenido'),
       actions: [
-        IconButton(onPressed: () {}, icon: const Icon(Icons.home)),
+        IconButton(onPressed: () {
+           Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DashboardScreen(
+                            loginResponse: loginResponse,
+                          )));
+        }, icon: const Icon(Icons.home)),
     PopupMenuButton<String>(
       onSelected: (String value) {
         // Manejar la opción seleccionada aquí
