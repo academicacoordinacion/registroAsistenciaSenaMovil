@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:dio/dio.dart';
+import 'package:registro_asistencia_sena_movil/models/login_response.dart';
+import 'package:registro_asistencia_sena_movil/utils/constantes.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class InicioSesion extends StatelessWidget {
   InicioSesion({super.key});
@@ -52,13 +56,54 @@ class InicioSesion extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    login(_email.text, _password.text);
+                  },
                   child: const Text('Iniciar sesión'),
                 ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void login(String email, String password) async {
+    final dio = Dio();
+    try {
+
+    final response = await dio.post("${Constantes.baseUrl}/authenticate/", data: {'email': email, 'password': password});
+    print(response);
+    if(response.statusCode == 200){
+      final loginResponse = LoginResponse.fromJson(response.data);
+      print(loginResponse);
+
+
+    Fluttertoast.showToast(
+      msg: "Usuario autenticado",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+    );
+    }
+    
+  } catch (e){
+    print("Error en las credenciales: $e");
+    
+    Fluttertoast.showToast(
+      msg: "Credenciales incorrectas",
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.TOP,
+    );
+    
+    }
+  }
+  void _showToast(BuildContext context) {
+    final scaffold = ScaffoldMessenger.of(context);
+    scaffold.showSnackBar(
+      SnackBar(
+        content: const Text('Added to favorite'),
+        action: SnackBarAction(label: 'UNDO', onPressed: scaffold.hideCurrentSnackBar),
       ),
     );
   }
