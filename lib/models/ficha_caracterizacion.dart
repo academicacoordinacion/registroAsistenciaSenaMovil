@@ -36,11 +36,12 @@ class Ficha {
   final dynamic horasFormacion;
   final dynamic cupo;
   final dynamic diasDeFormacion;
-  final int instructorAsignado;
+  final Instructor instructor;
   final DateTime createdAt;
   final DateTime updatedAt;
   final dynamic deletedAt;
-  final int ambienteId;
+  final String ambiente;
+  final String municipio;
 
   Ficha({
     required this.id,
@@ -50,11 +51,12 @@ class Ficha {
     required this.horasFormacion,
     required this.cupo,
     required this.diasDeFormacion,
-    required this.instructorAsignado,
+    required this.instructor,
     required this.createdAt,
     required this.updatedAt,
     required this.deletedAt,
-    required this.ambienteId,
+    required this.ambiente,
+    required this.municipio,
   });
 
   factory Ficha.fromJson(Map<String, dynamic> json) => Ficha(
@@ -65,11 +67,12 @@ class Ficha {
         horasFormacion: json["horas_formacion"],
         cupo: json["cupo"],
         diasDeFormacion: json["dias_de_formacion"],
-        instructorAsignado: json["instructor_asignado"],
+        instructor: Instructor.fromJson(json["Instructor"]),
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
         deletedAt: json["deleted_at"],
-        ambienteId: json["ambiente_id"],
+        ambiente: json["ambiente"],
+        municipio: json["municipio"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -80,10 +83,43 @@ class Ficha {
         "horas_formacion": horasFormacion,
         "cupo": cupo,
         "dias_de_formacion": diasDeFormacion,
-        "instructor_asignado": instructorAsignado,
+        "Instructor": instructor.toJson(),
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
         "deleted_at": deletedAt,
-        "ambiente_id": ambienteId,
+        "ambiente": ambiente,
+        "municipio": municipio,
+      };
+}
+
+class Instructor {
+  final int id;
+  final String primerNombre;
+  final String segundoNombre;
+  final String primerApellido;
+  final String segundoApellido;
+
+  Instructor({
+    required this.id,
+    required this.primerNombre,
+    required this.segundoNombre,
+    required this.primerApellido,
+    required this.segundoApellido,
+  });
+
+  factory Instructor.fromJson(Map<String, dynamic> json) => Instructor(
+        id: json["id"],
+        primerNombre: json["primer_nombre"],
+        segundoNombre: json["segundo_nombre"],
+        primerApellido: json["primer_apellido"],
+        segundoApellido: json["segundo_apellido"],
+      );
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "primer_nombre": primerNombre,
+        "segundo_nombre": segundoNombre,
+        "primer_apellido": primerApellido,
+        "segundo_apellido": segundoApellido,
       };
 }

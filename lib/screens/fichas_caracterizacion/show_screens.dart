@@ -6,13 +6,14 @@ import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/widgets/footer.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
 
-class IndexFichaCaracterizacion extends StatelessWidget {
-  const IndexFichaCaracterizacion({super.key, required this.loginResponse, required this.fichaCaracterizacion});
+class ShowFichaCaracterizacion extends StatelessWidget {
+  const ShowFichaCaracterizacion({super.key, required this.loginResponse, required this.fichaCaracterizacion});
   final LoginResponse loginResponse;
   final FichaCaracterizacion fichaCaracterizacion;
   @override
   Widget build(BuildContext context) {
     List<Ficha> fichas = fichaCaracterizacion.fichas;
+    int no = 1;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(MediaQuery.of(context).size.height *
@@ -100,13 +101,13 @@ class IndexFichaCaracterizacion extends StatelessWidget {
 
 
 
-  // show ficha caracterizacion
-//   void apiIndex( Ficha ficha ,BuildContext context) async {
+//   // Show ficha caracterizacion
+//   void apiShow( Ficha ficha ,BuildContext context) async {
    
 //         Navigator.push(
 //             context,
 //             MaterialPageRoute(
-//                 builder: (context) => IndexFichaCaracterizacion(
+//                 builder: (context) => ShowFichaCaracterizacion(
 //                       loginResponse: loginResponse, fichaCaracterizacion: fichaCaracterizacion,
 //                     )));
 //         print(fichaCaracterizacion);
