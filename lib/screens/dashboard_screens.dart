@@ -1,6 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/screens/fichas_caracterizacion/index_screens.dart';
+import 'package:registro_asistencia_sena_movil/utils/constantes.dart';
 import 'package:registro_asistencia_sena_movil/widgets/footer.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
 
@@ -48,10 +52,7 @@ class DashboardScreen extends StatelessWidget {
                         const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => IndexFichaCaracterizacion(loginResponse: loginResponse,)));
+                          apiIndex(loginResponse.user.id, context);
                         },
                         child: const Text('Comencemos'),
                       ),
@@ -65,6 +66,44 @@ class DashboardScreen extends StatelessWidget {
       ),
       bottomNavigationBar: const footer(),
     );
+  }
+
+
+
+  // index ficha caracterizacion
+  void apiIndex(int userId, BuildContext context) async {
+    final dio = Dio();
+    try {
+      final response = await dio.get("${Constantes.baseUrl}/fichaCaracterizacion/apiIndex/",
+          data: {'user_id': userId});
+          print("hola mundo");
+          print(response);
+      // print(response);
+      if (response.statusCode == 200) {
+        final fichaCaracterizacion = FichaCaracterizacion.fromJson(response.data);
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => IndexFichaCaracterizacion(
+                      loginResponse: loginResponse, fichaCaracterizacion: fichaCaracterizacion,
+                    )));
+        print(fichaCaracterizacion);
+
+        Fluttertoast.showToast(
+          msg: "Fichas traidas",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+        );
+      }
+    } catch (e) {
+      print("Error en las credenciales: $e");
+
+      Fluttertoast.showToast(
+        msg: "Fichas no encontradas",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+      );
+    }
   }
 }
 

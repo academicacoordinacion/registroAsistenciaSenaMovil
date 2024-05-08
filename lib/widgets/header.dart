@@ -19,7 +19,7 @@ class Header extends StatelessWidget {
       // title: const Text('Bienvenido'),
       actions: [
         IconButton(onPressed: () {
-           Navigator.push(
+          Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => DashboardScreen(
