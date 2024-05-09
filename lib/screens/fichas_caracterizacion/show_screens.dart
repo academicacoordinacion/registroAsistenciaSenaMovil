@@ -1,7 +1,7 @@
 // import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 // import 'package:flutter/widgets.dart';
-import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion.dart';
+import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/widgets/footer.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
