@@ -5,6 +5,7 @@ import 'package:registro_asistencia_sena_movil/models/departamento_response.dart
 // import 'package:flutter/widgets.dart';
 import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
+import 'package:registro_asistencia_sena_movil/models/municipio_response.dart';
 import 'package:registro_asistencia_sena_movil/screens/entradaSalida/index_screens.dart';
 import 'package:registro_asistencia_sena_movil/utils/constantes.dart';
 import 'package:registro_asistencia_sena_movil/widgets/footer.dart';
@@ -41,28 +42,14 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
       body: ListView(
         children: [
           seleccionarFicha(fichas),
-          Card(
-        child: DropdownButton<DepartamentoModel>(
-      padding: const EdgeInsets.all(15),
-      hint: const Text('Seleccione la ficha de caracterización'),
-      value: selectedDepartamento,
-      onChanged: (DepartamentoModel? newValue) {
-        setState(() {
-          selectedDepartamento = newValue;
-        });
-      },
-      items: [
-        const DropdownMenuItem<DepartamentoModel>(
-          value: null,
-          child: Text('Seleccione el departamento'),
-        ),
-        for (final departamento in departamentos)
-          DropdownMenuItem<DepartamentoModel>(
-            value: departamento,
-            child: Text('${departamento.departamento} '),
-          ),
-      ],
-    )),
+          seleccionarDepartamento(departamentos),
+          // Card(
+          //  child: Text(
+          //     selectedDepartamento == null
+          //         ? "No hay departamento seleccionado"
+          //         : selectedDepartamento!.id.toString(),
+          //   ),
+          // ),
           botonRegistros(context)
 
         ],
@@ -70,6 +57,32 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
       // getList(fichas),
       bottomNavigationBar: const footer(),
     );
+  }
+
+  Card seleccionarDepartamento(List<DepartamentoModel> departamentos) {
+    return Card(
+      child: DropdownButton<DepartamentoModel>(
+    padding: const EdgeInsets.all(15),
+    hint: const Text('Seleccione la ficha de caracterización'),
+    value: selectedDepartamento,
+    onChanged: (DepartamentoModel? newValue) {
+      setState(() {
+        selectedDepartamento = newValue;
+      });
+      apiCargarMunicipios(selectedDepartamento!);
+    },
+    items: [
+      const DropdownMenuItem<DepartamentoModel>(
+        value: null,
+        child: Text('Seleccione el departamento'),
+      ),
+      for (final departamento in departamentos)
+        DropdownMenuItem<DepartamentoModel>(
+          value: departamento,
+          child: Text('${departamento.departamento} '),
+        ),
+    ],
+  ));
   }
 
   ElevatedButton botonRegistros(BuildContext context) {
@@ -121,18 +134,30 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
       ],
     ));
   }
+  void apiCargarMunicipios(DepartamentoModel selectedDepartamento) async {
+    final dio = Dio();
+      try {
+        final response = await dio.get(
+          "${Constantes.baseUrl}/api/apiCargarMunicipios",
+          data: {'departamento_id': selectedDepartamento.id });
+          if (response.statusCode == 200) {
+          final municipiosResponse =
+            Municipio.fromJson(response.data);
+          print(municipiosResponse);
+          }
+      }catch(e){
+
+      }
+  }
   void apiIndex(Ficha selectedFicha, String instructorId,LoginResponse loginResponse, BuildContext context) async {
     final dio = Dio();
     try {
       final response = await dio.get(
           "${Constantes.baseUrl}/fichaCaracterizacion/apiIndex/",
           data: {'instructor_id': instructorId, 'ficha_id': selectedFicha.id});
-      // print("hola mundo");
-      // print(response);
       // print(response);
       if (response.statusCode == 200) {
-        final fichaCaracterizacion =
-            FichaCaracterizacion.fromJson(response.data);
+        final fichaCaracterizacion = FichaCaracterizacion.fromJson(response.data);
         Navigator.push(
             context,
             MaterialPageRoute(
