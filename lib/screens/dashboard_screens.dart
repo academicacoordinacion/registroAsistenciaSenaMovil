@@ -29,7 +29,6 @@ class DashboardScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(20),
                 // width: 350,
                 // height: 300,
-                
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,

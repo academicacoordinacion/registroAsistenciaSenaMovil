@@ -25,13 +25,25 @@ class IndexFichaCaracterizacion extends StatefulWidget {
 }
 
 class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
+
+@override
+  void initState() {
+    super.initState();
+    municipiosResponse = null; 
+  }
+
+
   Ficha? selectedFicha;
   DepartamentoModel? selectedDepartamento;
+  late List<Municipio>? municipiosResponse;
+    // List<Municipios>? municipiosResponse;
+  Municipio? selectedMunicipio;
 
   @override
   Widget build(BuildContext context) {
     List<Ficha> fichas = widget.fichaCaracterizacion.fichas;
     List<DepartamentoModel> departamentos = widget.departamento.departamentos;
+
     // String dropdwonValue = Ficha fichas.first;
     return Scaffold(
       appBar: PreferredSize(
@@ -43,13 +55,27 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
         children: [
           seleccionarFicha(fichas),
           seleccionarDepartamento(departamentos),
-          // Card(
-          //  child: Text(
-          //     selectedDepartamento == null
-          //         ? "No hay departamento seleccionado"
-          //         : selectedDepartamento!.id.toString(),
-          //   ),
-          // ),
+          seleccionarMunicipio(municipiosResponse!),
+          const Card(child: Text("sede"),),
+          const Card(
+            child: Text("bloque"),
+          ),
+          const Card(
+            child: Text("piso"),
+          ),
+          const Card(
+            child: Text("ambiente"),
+          ),
+          
+          
+          
+          Card(
+           child: Text(
+              selectedMunicipio == null
+                  ? "No hay municipio seleccionado"
+                  : selectedMunicipio!.id.toString(),
+            ),
+          ),
           botonRegistros(context)
 
         ],
@@ -83,6 +109,31 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
         ),
     ],
   ));
+  }
+  Card seleccionarMunicipio(List<Municipio> municipiosResponse) {
+    return Card(
+        child: DropdownButton<Municipio>(
+      padding: const EdgeInsets.all(15),
+      hint: const Text('Seleccione el departamento'),
+      value: selectedMunicipio,
+      onChanged: (Municipio? newValue) {
+        setState(() {
+          selectedMunicipio = newValue;
+        });
+        // apiCargarMunicipios(selectedDepartamento!);
+      },
+      items: [
+        const DropdownMenuItem<Municipio>(
+          value: null,
+          child: Text('Seleccione el municipio'),
+        ),
+        for (final municipio in municipiosResponse)
+          DropdownMenuItem<Municipio>(
+            value: municipio,
+            child: Text('${municipio.municipio} '),
+          ),
+      ],
+    ));
   }
 
   ElevatedButton botonRegistros(BuildContext context) {
@@ -134,21 +185,27 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
       ],
     ));
   }
-  void apiCargarMunicipios(DepartamentoModel selectedDepartamento) async {
+  apiCargarMunicipios(DepartamentoModel selectedDepartamento) async {
     final dio = Dio();
-      try {
-        final response = await dio.get(
-          "${Constantes.baseUrl}/api/apiCargarMunicipios",
-          data: {'departamento_id': selectedDepartamento.id });
-          if (response.statusCode == 200) {
-          final municipiosResponse =
-            Municipio.fromJson(response.data);
-          print(municipiosResponse);
-          }
-      }catch(e){
-
+    print(selectedDepartamento.id);
+    try {
+      final response = await dio.get(
+          "${Constantes.baseUrl}/apiCargarMunicipios",
+          data: {'departamento_id': selectedDepartamento.id});
+      if (response.statusCode == 200) {
+        final municipios = Municipios.fromJson(response.data);
+        // Actualiza municipiosResponse con la lista de municipios
+        print(municipiosResponse);
+        setState(() {
+          municipiosResponse = municipios.municipios;
+        });
       }
+    } catch (e) {
+      // Manejo de errores
+      print("error ${e}");
+    }
   }
+
   void apiIndex(Ficha selectedFicha, String instructorId,LoginResponse loginResponse, BuildContext context) async {
     final dio = Dio();
     try {
