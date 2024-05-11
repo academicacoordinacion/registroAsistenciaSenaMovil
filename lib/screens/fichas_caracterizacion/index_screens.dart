@@ -1,12 +1,19 @@
 // import 'package:flutter/cupertino.dart';
+import 'dart:math';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:registro_asistencia_sena_movil/models/ambiente_response.dart';
+import 'package:registro_asistencia_sena_movil/models/bloque_response.dart';
 import 'package:registro_asistencia_sena_movil/models/departamento_response.dart';
 // import 'package:flutter/widgets.dart';
 import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/models/municipio_response.dart';
+import 'package:registro_asistencia_sena_movil/models/piso_response.dart';
+import 'package:registro_asistencia_sena_movil/models/sede_response.dart';
 import 'package:registro_asistencia_sena_movil/screens/entradaSalida/index_screens.dart';
+import 'package:registro_asistencia_sena_movil/services/app_services.dart';
 import 'package:registro_asistencia_sena_movil/utils/constantes.dart';
 import 'package:registro_asistencia_sena_movil/widgets/footer.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
@@ -30,14 +37,27 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
   void initState() {
     super.initState();
     municipiosResponse = null; 
+    sedesResponse = null;
+    bloquesResponse = null;
+    pisoResponse = null;
+    ambienteResponse = null;
   }
 
 
   Ficha? selectedFicha;
   DepartamentoModel? selectedDepartamento;
   late List<Municipio>? municipiosResponse;
-    // List<Municipios>? municipiosResponse;
+  late List<Sede>? sedesResponse;
+  late List<Bloque>? bloquesResponse;
+  late List<Piso>? pisoResponse;
+  late List<Ambiente>? ambienteResponse;
   Municipio? selectedMunicipio;
+  Sede? selectedSede;
+  Bloque? selectedBloque;
+  Piso? selectedPiso;
+  Ambiente? selecAmbiente;
+
+  final AppServices appServices = AppServices();
 
   @override
   Widget build(BuildContext context) {
@@ -55,27 +75,11 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
         children: [
           seleccionarFicha(fichas),
           seleccionarDepartamento(departamentos),
-          seleccionarMunicipio(municipiosResponse!),
-          const Card(child: Text("sede"),),
-          const Card(
-            child: Text("bloque"),
-          ),
-          const Card(
-            child: Text("piso"),
-          ),
-          const Card(
-            child: Text("ambiente"),
-          ),
-          
-          
-          
-          Card(
-           child: Text(
-              selectedMunicipio == null
-                  ? "No hay municipio seleccionado"
-                  : selectedMunicipio!.id.toString(),
-            ),
-          ),
+          seleccionarMunicipio(),
+          seleccionarSede(),
+          seleccionarBloque(),
+          seleccionarPiso(),
+          seleccionarAmbiente(),
           botonRegistros(context)
 
         ],
@@ -85,7 +89,7 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
     );
   }
 
-  Card seleccionarDepartamento(List<DepartamentoModel> departamentos) {
+  Widget seleccionarDepartamento(List<DepartamentoModel> departamentos) {
     return Card(
       child: DropdownButton<DepartamentoModel>(
     padding: const EdgeInsets.all(15),
@@ -110,7 +114,11 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
     ],
   ));
   }
-  Card seleccionarMunicipio(List<Municipio> municipiosResponse) {
+
+  Widget seleccionarMunicipio() {
+    if (municipiosResponse == null){
+      return Text("");
+    }
     return Card(
         child: DropdownButton<Municipio>(
       padding: const EdgeInsets.all(15),
@@ -120,17 +128,133 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
         setState(() {
           selectedMunicipio = newValue;
         });
-        // apiCargarMunicipios(selectedDepartamento!);
+        apiCargarSedes(selectedMunicipio!);
       },
       items: [
         const DropdownMenuItem<Municipio>(
           value: null,
           child: Text('Seleccione el municipio'),
         ),
-        for (final municipio in municipiosResponse)
+        for (final municipio in municipiosResponse!)
           DropdownMenuItem<Municipio>(
             value: municipio,
             child: Text('${municipio.municipio} '),
+          ),
+      ],
+    ));
+  }
+
+  
+  Widget seleccionarSede() {
+    if (sedesResponse == null){
+      return Text("");
+    }
+    return Card(
+        child: DropdownButton<Sede>(
+      padding: const EdgeInsets.all(15),
+      hint: const Text('Seleccione el municipio'),
+      value: selectedSede,
+      onChanged: (Sede? newValue) {
+        setState(() {
+          selectedSede = newValue;
+        });
+        apiCargarBloque(selectedSede!);
+      },
+      items: [
+        const DropdownMenuItem<Sede>(
+          value: null,
+          child: Text('Seleccione la sede'),
+        ),
+        for (final sede in sedesResponse!)
+          DropdownMenuItem<Sede>(
+            value: sede,
+            child: Text('${sede.sede} '),
+          ),
+      ],
+    ));
+  }
+  
+  Widget seleccionarBloque() {
+    if (bloquesResponse == null){
+      return const Text("");
+    }
+    return Card(
+        child: DropdownButton<Bloque>(
+      padding: const EdgeInsets.all(15),
+      hint: const Text('Seleccione la sede'),
+      value: selectedBloque,
+      onChanged: (Bloque? newValue) {
+        setState(() {
+          selectedBloque = newValue;
+        });
+        apiCargarPiso(selectedBloque!);
+      },
+      items: [
+        const DropdownMenuItem<Bloque>(
+          value: null,
+          child: Text('Seleccione el bloque'),
+        ),
+        for (final bloque in bloquesResponse!)
+          DropdownMenuItem<Bloque>(
+            value: bloque,
+            child: Text('${bloque.bloque} '),
+          ),
+      ],
+    ));
+  }
+
+  Widget seleccionarPiso() {
+    if (pisoResponse == null){
+      return const Text("");
+    }
+    return Card(
+        child: DropdownButton<Piso>(
+      padding: const EdgeInsets.all(15),
+      hint: const Text('Seleccione el bloque'),
+      value: selectedPiso,
+      onChanged: (Piso? newValue) {
+        setState(() {
+          selectedPiso = newValue;
+        });
+        apiCargarAmbientes(selectedPiso!);
+      },
+      items: [
+        const DropdownMenuItem<Piso>(
+          value: null,
+          child: Text('Seleccione el piso'),
+        ),
+        for (final piso in pisoResponse!)
+          DropdownMenuItem<Piso>(
+            value: piso,
+            child: Text('${piso.piso} '),
+          ),
+      ],
+    ));
+  }
+  Widget seleccionarAmbiente() {
+    if (ambienteResponse == null){
+      return const Text("");
+    }
+    return Card(
+        child: DropdownButton<Ambiente>(
+      padding: const EdgeInsets.all(15),
+      hint: const Text('Seleccione el piso'),
+      value: selecAmbiente,
+      onChanged: (Ambiente? newValue) {
+        setState(() {
+          selecAmbiente = newValue;
+        });
+        // apiCargarAmbientes(selectedPiso!);
+      },
+      items: [
+        const DropdownMenuItem<Ambiente>(
+          value: null,
+          child: Text('Seleccione el ambiente'),
+        ),
+        for (final ambiente in ambienteResponse!)
+          DropdownMenuItem<Ambiente>(
+            value: ambiente,
+            child: Text('${ambiente.title} '),
           ),
       ],
     ));
@@ -185,6 +309,7 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
       ],
     ));
   }
+  
   apiCargarMunicipios(DepartamentoModel selectedDepartamento) async {
     final dio = Dio();
     print(selectedDepartamento.id);
@@ -204,6 +329,78 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
       // Manejo de errores
       print("error ${e}");
     }
+  }
+
+  apiCargarSedes(Municipio seleccionarMunicipio) async {
+    final dio = Dio();
+    // print(seleccionarMunicipio.id);
+    try {
+      final response = await dio.get(
+          "${Constantes.baseUrl}/apiCargarSedes",
+          data: {'municipio_id': seleccionarMunicipio.id});
+      if (response.statusCode == 200) {
+        final sedes = Sedes.fromJson(response.data);
+        // Actualiza municipiosResponse con la lista de municipios
+        // print(sedesResponse);
+        setState(() {
+          sedesResponse = sedes.sedes;
+        });
+      }
+    } catch (e) {
+      // Manejo de errores
+      print("error ${e}");
+    }
+  }
+
+apiCargarBloque(Sede selectedSede) async {
+    final dio = Dio();
+    // print(seleccionarMunicipio.id);
+    try {
+      final response = await dio.get(
+          "${Constantes.baseUrl}/apiCargarBloques",
+          data: {'sede_id': selectedSede.id});
+      if (response.statusCode == 200) {
+        final bloques = Bloques.fromJson(response.data);
+        // Actualiza municipiosResponse con la lista de municipios
+        // print(sedesResponse);
+        setState(() {
+          bloquesResponse = bloques.bloques;
+        });
+      }
+    } catch (e) {
+      // Manejo de errores
+      print("error ${e}");
+    }
+  }
+
+  apiCargarPiso(Bloque seleccionarBloque) async {
+    final dio = Dio();
+    // print(seleccionarMunicipio.id);
+    try {
+      final response = await dio.get(
+          "${Constantes.baseUrl}/apiCargarPisos",
+          data: {'bloque_id': selectedBloque!.id});
+      if (response.statusCode == 200) {
+        final pisos = Pisos.fromJson(response.data);
+        // Actualiza municipiosResponse con la lista de municipios
+        // print(sedesResponse);
+        setState(() {
+          pisoResponse = pisos.pisos;
+        });
+      }
+    } catch (e) {
+      // Manejo de errores
+      print("error ${e}");
+    }
+  }
+
+  apiCargarAmbientes(Piso selectedPiso) async {
+    final data = await appServices.getAmbientes(selectedPiso);
+     if ( data.isNotEmpty ){
+      setState(() {
+        ambienteResponse = data;
+      });
+     }
   }
 
   void apiIndex(Ficha selectedFicha, String instructorId,LoginResponse loginResponse, BuildContext context) async {
