@@ -1,29 +1,13 @@
 // To parse this JSON data, do
 //
-//     final bloques = bloquesFromJson(jsonString);
+//     final bloque = bloqueFromJson(jsonString);
 
 // import 'package:meta/meta.dart';
 import 'dart:convert';
 
-Bloques bloquesFromJson(String str) => Bloques.fromJson(json.decode(str));
+List<Bloque> bloqueFromJson(String str) => List<Bloque>.from(json.decode(str).map((x) => Bloque.fromJson(x)));
 
-String bloquesToJson(Bloques data) => json.encode(data.toJson());
-
-class Bloques {
-    final List<Bloque> bloques;
-
-    Bloques({
-        required this.bloques,
-    });
-
-    factory Bloques.fromJson(Map<String, dynamic> json) => Bloques(
-        bloques: List<Bloque>.from(json["bloques"].map((x) => Bloque.fromJson(x))),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "bloques": List<dynamic>.from(bloques.map((x) => x.toJson())),
-    };
-}
+String bloqueToJson(List<Bloque> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class Bloque {
     final int id;
@@ -45,6 +29,27 @@ class Bloque {
         required this.createdAt,
         required this.updatedAt,
     });
+
+    Bloque copyWith({
+        int? id,
+        String? bloque,
+        int? sedeId,
+        int? userCreateId,
+        int? userEditId,
+        int? status,
+        DateTime? createdAt,
+        DateTime? updatedAt,
+    }) => 
+        Bloque(
+            id: id ?? this.id,
+            bloque: bloque ?? this.bloque,
+            sedeId: sedeId ?? this.sedeId,
+            userCreateId: userCreateId ?? this.userCreateId,
+            userEditId: userEditId ?? this.userEditId,
+            status: status ?? this.status,
+            createdAt: createdAt ?? this.createdAt,
+            updatedAt: updatedAt ?? this.updatedAt,
+        );
 
     factory Bloque.fromJson(Map<String, dynamic> json) => Bloque(
         id: json["id"],

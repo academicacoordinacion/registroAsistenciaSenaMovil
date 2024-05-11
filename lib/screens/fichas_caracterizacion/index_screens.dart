@@ -1,5 +1,5 @@
 // import 'package:flutter/cupertino.dart';
-import 'dart:math';
+// import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -22,10 +22,10 @@ class IndexFichaCaracterizacion extends StatefulWidget {
   const IndexFichaCaracterizacion(
       {super.key,
       required this.loginResponse,
-      required this.fichaCaracterizacion, required this.departamento});
+      required this.fichaCaracterizacion, required this.departamentos});
   final LoginResponse loginResponse;
   final FichaCaracterizacion fichaCaracterizacion;
-  final Departamento departamento;
+  final List<Departamento> departamentos;
   @override
   State<IndexFichaCaracterizacion> createState() =>
       _IndexFichaCaracterizacionState();
@@ -45,7 +45,7 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
 
 
   Ficha? selectedFicha;
-  DepartamentoModel? selectedDepartamento;
+  Departamento? selectedDepartamento;
   late List<Municipio>? municipiosResponse;
   late List<Sede>? sedesResponse;
   late List<Bloque>? bloquesResponse;
@@ -62,7 +62,7 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
   @override
   Widget build(BuildContext context) {
     List<Ficha> fichas = widget.fichaCaracterizacion.fichas;
-    List<DepartamentoModel> departamentos = widget.departamento.departamentos;
+    List<Departamento> departamentos = widget.departamentos;
 
     // String dropdwonValue = Ficha fichas.first;
     return Scaffold(
@@ -89,25 +89,25 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
     );
   }
 
-  Widget seleccionarDepartamento(List<DepartamentoModel> departamentos) {
+  Widget seleccionarDepartamento(List<Departamento> departamentos) {
     return Card(
-      child: DropdownButton<DepartamentoModel>(
+      child: DropdownButton<Departamento>(
     padding: const EdgeInsets.all(15),
     hint: const Text('Seleccione la ficha de caracterización'),
     value: selectedDepartamento,
-    onChanged: (DepartamentoModel? newValue) {
+    onChanged: (Departamento? newValue) {
       setState(() {
         selectedDepartamento = newValue;
       });
       apiCargarMunicipios(selectedDepartamento!);
     },
     items: [
-      const DropdownMenuItem<DepartamentoModel>(
+      const DropdownMenuItem<Departamento>(
         value: null,
         child: Text('Seleccione el departamento'),
       ),
       for (final departamento in departamentos)
-        DropdownMenuItem<DepartamentoModel>(
+        DropdownMenuItem<Departamento>(
           value: departamento,
           child: Text('${departamento.departamento} '),
         ),
@@ -285,7 +285,7 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
         );
   }
 
-  Card seleccionarFicha(List<Ficha> fichas) {
+  Widget seleccionarFicha(List<Ficha> fichas) {
     return Card(
         child: DropdownButton<Ficha>(
       padding: const EdgeInsets.all(15),
@@ -310,87 +310,43 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
     ));
   }
   
-  apiCargarMunicipios(DepartamentoModel selectedDepartamento) async {
-    final dio = Dio();
-    print(selectedDepartamento.id);
-    try {
-      final response = await dio.get(
-          "${Constantes.baseUrl}/apiCargarMunicipios",
-          data: {'departamento_id': selectedDepartamento.id});
-      if (response.statusCode == 200) {
-        final municipios = Municipios.fromJson(response.data);
-        // Actualiza municipiosResponse con la lista de municipios
-        print(municipiosResponse);
-        setState(() {
-          municipiosResponse = municipios.municipios;
-        });
-      }
-    } catch (e) {
-      // Manejo de errores
-      print("error ${e}");
-    }
-  }
+    apiCargarMunicipios(Departamento selectedDepartamento) async {
+      final data = await appServices.getMunicipios(selectedDepartamento);
+      // print(data);
+      if (data.isNotEmpty){
+          setState(() {
+            municipiosResponse = data;
+          });
 
-  apiCargarSedes(Municipio seleccionarMunicipio) async {
-    final dio = Dio();
-    // print(seleccionarMunicipio.id);
-    try {
-      final response = await dio.get(
-          "${Constantes.baseUrl}/apiCargarSedes",
-          data: {'municipio_id': seleccionarMunicipio.id});
-      if (response.statusCode == 200) {
-        final sedes = Sedes.fromJson(response.data);
-        // Actualiza municipiosResponse con la lista de municipios
-        // print(sedesResponse);
-        setState(() {
-          sedesResponse = sedes.sedes;
-        });
       }
-    } catch (e) {
-      // Manejo de errores
-      print("error ${e}");
-    }
+        }
+
+
+  apiCargarSedes(Municipio selectedMunicipio) async {
+   final data = await appServices.getSedes(selectedMunicipio);
+   if (data.isNotEmpty){
+    setState(() {
+      sedesResponse = data;
+    });
+   }
   }
 
 apiCargarBloque(Sede selectedSede) async {
-    final dio = Dio();
-    // print(seleccionarMunicipio.id);
-    try {
-      final response = await dio.get(
-          "${Constantes.baseUrl}/apiCargarBloques",
-          data: {'sede_id': selectedSede.id});
-      if (response.statusCode == 200) {
-        final bloques = Bloques.fromJson(response.data);
-        // Actualiza municipiosResponse con la lista de municipios
-        // print(sedesResponse);
-        setState(() {
-          bloquesResponse = bloques.bloques;
-        });
-      }
-    } catch (e) {
-      // Manejo de errores
-      print("error ${e}");
-    }
+   final data = await appServices.getBloques(selectedSede);
+   if (data.isNotEmpty) {
+    setState(() {
+      bloquesResponse = data;
+    });
+   }
+    
   }
 
-  apiCargarPiso(Bloque seleccionarBloque) async {
-    final dio = Dio();
-    // print(seleccionarMunicipio.id);
-    try {
-      final response = await dio.get(
-          "${Constantes.baseUrl}/apiCargarPisos",
-          data: {'bloque_id': selectedBloque!.id});
-      if (response.statusCode == 200) {
-        final pisos = Pisos.fromJson(response.data);
-        // Actualiza municipiosResponse con la lista de municipios
-        // print(sedesResponse);
-        setState(() {
-          pisoResponse = pisos.pisos;
-        });
-      }
-    } catch (e) {
-      // Manejo de errores
-      print("error ${e}");
+  apiCargarPiso(Bloque selectedBloque) async {
+    final data = await appServices.getPisos(selectedBloque);
+    if (data.isNotEmpty){
+      setState(() {
+        pisoResponse = data;
+      });
     }
   }
 

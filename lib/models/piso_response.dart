@@ -1,29 +1,13 @@
 // To parse this JSON data, do
 //
-//     final pisos = pisosFromJson(jsonString);
+//     final piso = pisoFromJson(jsonString);
 
 // import 'package:meta/meta.dart';
 import 'dart:convert';
 
-Pisos pisosFromJson(String str) => Pisos.fromJson(json.decode(str));
+List<Piso> pisoFromJson(String str) => List<Piso>.from(json.decode(str).map((x) => Piso.fromJson(x)));
 
-String pisosToJson(Pisos data) => json.encode(data.toJson());
-
-class Pisos {
-    final List<Piso> pisos;
-
-    Pisos({
-        required this.pisos,
-    });
-
-    factory Pisos.fromJson(Map<String, dynamic> json) => Pisos(
-        pisos: List<Piso>.from(json["pisos"].map((x) => Piso.fromJson(x))),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "pisos": List<dynamic>.from(pisos.map((x) => x.toJson())),
-    };
-}
+String pisoToJson(List<Piso> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class Piso {
     final int id;
@@ -45,6 +29,27 @@ class Piso {
         required this.createdAt,
         required this.updatedAt,
     });
+
+    Piso copyWith({
+        int? id,
+        String? piso,
+        int? bloqueId,
+        int? userCreateId,
+        int? userEditId,
+        int? status,
+        DateTime? createdAt,
+        DateTime? updatedAt,
+    }) => 
+        Piso(
+            id: id ?? this.id,
+            piso: piso ?? this.piso,
+            bloqueId: bloqueId ?? this.bloqueId,
+            userCreateId: userCreateId ?? this.userCreateId,
+            userEditId: userEditId ?? this.userEditId,
+            status: status ?? this.status,
+            createdAt: createdAt ?? this.createdAt,
+            updatedAt: updatedAt ?? this.updatedAt,
+        );
 
     factory Piso.fromJson(Map<String, dynamic> json) => Piso(
         id: json["id"],

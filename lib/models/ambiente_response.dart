@@ -1,29 +1,13 @@
 // To parse this JSON data, do
 //
-//     final ambientes = ambientesFromJson(jsonString);
+//     final ambiente = ambienteFromJson(jsonString);
 
 // import 'package:meta/meta.dart';
 import 'dart:convert';
 
-Ambientes ambientesFromJson(String str) => Ambientes.fromJson(json.decode(str));
+List<Ambiente> ambienteFromJson(String str) => List<Ambiente>.from(json.decode(str).map((x) => Ambiente.fromJson(x)));
 
-String ambientesToJson(Ambientes data) => json.encode(data.toJson());
-
-class Ambientes {
-    final List<Ambiente> ambientes;
-
-    Ambientes({
-        required this.ambientes,
-    });
-
-    factory Ambientes.fromJson(Map<String, dynamic> json) => Ambientes(
-        ambientes: List<Ambiente>.from(json["ambientes"].map((x) => Ambiente.fromJson(x))),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "ambientes": List<dynamic>.from(ambientes.map((x) => x.toJson())),
-    };
-}
+String ambienteToJson(List<Ambiente> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class Ambiente {
     final int id;
@@ -45,6 +29,27 @@ class Ambiente {
         required this.userEditId,
         required this.status,
     });
+
+    Ambiente copyWith({
+        int? id,
+        String? title,
+        DateTime? createdAt,
+        DateTime? updatedAt,
+        int? pisoId,
+        int? userCreateId,
+        int? userEditId,
+        int? status,
+    }) => 
+        Ambiente(
+            id: id ?? this.id,
+            title: title ?? this.title,
+            createdAt: createdAt ?? this.createdAt,
+            updatedAt: updatedAt ?? this.updatedAt,
+            pisoId: pisoId ?? this.pisoId,
+            userCreateId: userCreateId ?? this.userCreateId,
+            userEditId: userEditId ?? this.userEditId,
+            status: status ?? this.status,
+        );
 
     factory Ambiente.fromJson(Map<String, dynamic> json) => Ambiente(
         id: json["id"],

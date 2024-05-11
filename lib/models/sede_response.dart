@@ -1,29 +1,13 @@
 // To parse this JSON data, do
 //
-//     final sedes = sedesFromJson(jsonString);
+//     final sede = sedeFromJson(jsonString);
 
 // import 'package:meta/meta.dart';
 import 'dart:convert';
 
-Sedes sedesFromJson(String str) => Sedes.fromJson(json.decode(str));
+List<Sede> sedeFromJson(String str) => List<Sede>.from(json.decode(str).map((x) => Sede.fromJson(x)));
 
-String sedesToJson(Sedes data) => json.encode(data.toJson());
-
-class Sedes {
-    final List<Sede> sedes;
-
-    Sedes({
-        required this.sedes,
-    });
-
-    factory Sedes.fromJson(Map<String, dynamic> json) => Sedes(
-        sedes: List<Sede>.from(json["sedes"].map((x) => Sede.fromJson(x))),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "sedes": List<dynamic>.from(sedes.map((x) => x.toJson())),
-    };
-}
+String sedeToJson(List<Sede> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class Sede {
     final int id;
@@ -47,6 +31,29 @@ class Sede {
         required this.updatedAt,
         required this.municipioId,
     });
+
+    Sede copyWith({
+        int? id,
+        String? sede,
+        String? direccion,
+        int? userCreateId,
+        int? userEditId,
+        int? status,
+        DateTime? createdAt,
+        DateTime? updatedAt,
+        int? municipioId,
+    }) => 
+        Sede(
+            id: id ?? this.id,
+            sede: sede ?? this.sede,
+            direccion: direccion ?? this.direccion,
+            userCreateId: userCreateId ?? this.userCreateId,
+            userEditId: userEditId ?? this.userEditId,
+            status: status ?? this.status,
+            createdAt: createdAt ?? this.createdAt,
+            updatedAt: updatedAt ?? this.updatedAt,
+            municipioId: municipioId ?? this.municipioId,
+        );
 
     factory Sede.fromJson(Map<String, dynamic> json) => Sede(
         id: json["id"],

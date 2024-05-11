@@ -85,12 +85,12 @@ class DashboardScreen extends StatelessWidget {
       
       if (response.statusCode == 200 && response2.statusCode == 200 ) { 
         final fichaCaracterizacion = FichaCaracterizacion.fromJson(response.data);
-        final departamentos = Departamento.fromJson(response2.data);
+        final departamentos = (response2.data as List).map((e) => Departamento.fromJson(e)).toList();
         Navigator.push(
             context,
             MaterialPageRoute(
                 builder: (context) => IndexFichaCaracterizacion(
-                      loginResponse: loginResponse, fichaCaracterizacion: fichaCaracterizacion, departamento: departamentos,
+                      loginResponse: loginResponse, fichaCaracterizacion: fichaCaracterizacion, departamentos: departamentos,
                     )));
         // print(fichaCaracterizacion);
         // print(loginResponse);
