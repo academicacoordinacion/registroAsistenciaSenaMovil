@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:registro_asistencia_sena_movil/models/departamento_response.dart';
 import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
-import 'package:registro_asistencia_sena_movil/screens/fichas_caracterizacion/index_screens.dart';
+import 'package:registro_asistencia_sena_movil/screens/fichas_caracterizacion/index1_screens.dart';
 import 'package:registro_asistencia_sena_movil/utils/constantes.dart';
 import 'package:registro_asistencia_sena_movil/widgets/footer.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
@@ -77,11 +77,12 @@ class DashboardScreen extends StatelessWidget {
       final response = await dio.get("${Constantes.baseUrl}/fichaCaracterizacion/apiIndex/",
           data: {'user_id': userId});
           // print("hola mundo");
-          // print(response);
+          print(response);
       // print(response);
       final response2 =
           await dio.get("${Constantes.baseUrl}/apiCargarDepartamentos");
       print(response2);
+      print(loginResponse.token);
       
       if (response.statusCode == 200 && response2.statusCode == 200 ) { 
         final fichaCaracterizacion = FichaCaracterizacion.fromJson(response.data);

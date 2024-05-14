@@ -5,7 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:registro_asistencia_sena_movil/models/ambiente_response.dart';
 import 'package:registro_asistencia_sena_movil/models/bloque_response.dart';
-import 'package:registro_asistencia_sena_movil/models/departamento_response.dart';
+// import 'package:registro_asistencia_sena_movil/models/departamento_response.dart';
 // import 'package:flutter/widgets.dart';
 import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
@@ -18,40 +18,36 @@ import 'package:registro_asistencia_sena_movil/utils/constantes.dart';
 import 'package:registro_asistencia_sena_movil/widgets/footer.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
 
-class IndexFichaCaracterizacion extends StatefulWidget {
-  const IndexFichaCaracterizacion(
+class Index2FichaCaracterizacion extends StatefulWidget {
+  const Index2FichaCaracterizacion(
       {super.key,
       required this.loginResponse,
-      required this.fichaCaracterizacion, required this.departamentos});
+      required this.ficha, required this.sedesResponse});
   final LoginResponse loginResponse;
-  final FichaCaracterizacion fichaCaracterizacion;
-  final List<Departamento> departamentos;
+  final Ficha ficha;
+  final List<Sede> sedesResponse;
   @override
-  State<IndexFichaCaracterizacion> createState() =>
-      _IndexFichaCaracterizacionState();
+  State<Index2FichaCaracterizacion> createState() =>
+      _Index2FichaCaracterizacionState();
 }
 
-class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
+class _Index2FichaCaracterizacionState extends State<Index2FichaCaracterizacion> {
 
 @override
   void initState() {
     super.initState();
-    municipiosResponse = null; 
-    sedesResponse = null;
+    // sedesResponse = null;
     bloquesResponse = null;
     pisoResponse = null;
     ambienteResponse = null;
   }
 
 
-  Ficha? selectedFicha;
-  Departamento? selectedDepartamento;
-  late List<Municipio>? municipiosResponse;
-  late List<Sede>? sedesResponse;
+  // late List<Municipio>? municipiosResponse;
+  late List<Sede> sedesResponse;
   late List<Bloque>? bloquesResponse;
   late List<Piso>? pisoResponse;
   late List<Ambiente>? ambienteResponse;
-  Municipio? selectedMunicipio;
   Sede? selectedSede;
   Bloque? selectedBloque;
   Piso? selectedPiso;
@@ -61,10 +57,8 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
 
   @override
   Widget build(BuildContext context) {
-    List<Ficha> fichas = widget.fichaCaracterizacion.fichas;
-    List<Departamento> departamentos = widget.departamentos;
-
     // String dropdwonValue = Ficha fichas.first;
+    sedesResponse = widget.sedesResponse;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(MediaQuery.of(context).size.height *
@@ -73,9 +67,6 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
       ),
       body: ListView(
         children: [
-          seleccionarFicha(fichas),
-          seleccionarDepartamento(departamentos),
-          seleccionarMunicipio(),
           seleccionarSede(),
           seleccionarBloque(),
           seleccionarPiso(),
@@ -89,66 +80,11 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
     );
   }
 
-  Widget seleccionarDepartamento(List<Departamento> departamentos) {
-    return Card(
-      child: DropdownButton<Departamento>(
-    padding: const EdgeInsets.all(15),
-    hint: const Text('Seleccione la ficha de caracterización'),
-    value: selectedDepartamento,
-    onChanged: (Departamento? newValue) {
-      setState(() {
-        selectedDepartamento = newValue;
-      });
-      apiCargarMunicipios(selectedDepartamento!);
-    },
-    items: [
-      const DropdownMenuItem<Departamento>(
-        value: null,
-        child: Text('Seleccione el departamento'),
-      ),
-      for (final departamento in departamentos)
-        DropdownMenuItem<Departamento>(
-          value: departamento,
-          child: Text('${departamento.departamento} '),
-        ),
-    ],
-  ));
-  }
-
-  Widget seleccionarMunicipio() {
-    if (municipiosResponse == null){
-      return Text("");
-    }
-    return Card(
-        child: DropdownButton<Municipio>(
-      padding: const EdgeInsets.all(15),
-      hint: const Text('Seleccione el departamento'),
-      value: selectedMunicipio,
-      onChanged: (Municipio? newValue) {
-        setState(() {
-          selectedMunicipio = newValue;
-        });
-        apiCargarSedes(selectedMunicipio!);
-      },
-      items: [
-        const DropdownMenuItem<Municipio>(
-          value: null,
-          child: Text('Seleccione el municipio'),
-        ),
-        for (final municipio in municipiosResponse!)
-          DropdownMenuItem<Municipio>(
-            value: municipio,
-            child: Text('${municipio.municipio} '),
-          ),
-      ],
-    ));
-  }
-
   
   Widget seleccionarSede() {
-    if (sedesResponse == null){
-      return Text("");
-    }
+    // if (sedesResponse == null){
+    //   return Text("");
+    // }
     return Card(
         child: DropdownButton<Sede>(
       padding: const EdgeInsets.all(15),
@@ -165,7 +101,7 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
           value: null,
           child: Text('Seleccione la sede'),
         ),
-        for (final sede in sedesResponse!)
+        for (final sede in sedesResponse)
           DropdownMenuItem<Sede>(
             value: sede,
             child: Text('${sede.sede} '),
@@ -186,8 +122,10 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
       onChanged: (Bloque? newValue) {
         setState(() {
           selectedBloque = newValue;
+          selectedPiso = null; // Reset piso selection
+          apiCargarPiso(newValue!);
         });
-        apiCargarPiso(selectedBloque!);
+        // apiCargarPiso(selectedBloque!);
       },
       items: [
         const DropdownMenuItem<Bloque>(
@@ -264,66 +202,30 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
     return ElevatedButton(
           onPressed: () {
             // Verifica si se ha seleccionado una ficha antes de llamar a apiIndex
-            if (selectedFicha != null) {
-              // Llama a la función apiIndex con los parámetros necesarios
-              apiIndex(
-                  selectedFicha!,
-                  widget.loginResponse.user.id.toString(),
-                  widget.loginResponse,
-                  context);
-            } else {
-              // Si no se ha seleccionado ninguna ficha, muestra un mensaje o toma alguna otra acción
-              // Por ejemplo, podrías mostrar un SnackBar para notificar al usuario que debe seleccionar una ficha
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Seleccione una ficha antes de continuar.'),
-                ),
-              );
-            }
+            // if (ficha != null) {
+            //   // Llama a la función apiIndex con los parámetros necesarios
+            //   apiIndex(
+            //       selectedFicha!,
+            //       widget.loginResponse.user.id.toString(),
+            //       widget.loginResponse,
+            //       context);
+            // } else {
+            //   // Si no se ha seleccionado ninguna ficha, muestra un mensaje o toma alguna otra acción
+            //   // Por ejemplo, podrías mostrar un SnackBar para notificar al usuario que debe seleccionar una ficha
+            //   ScaffoldMessenger.of(context).showSnackBar(
+            //     const SnackBar(
+            //       content: Text('Seleccione una ficha antes de continuar.'),
+            //     ),
+            //   );
+            // }
           },
           child: const Icon(Icons.list_outlined),
         );
   }
 
-  Widget seleccionarFicha(List<Ficha> fichas) {
-    return Card(
-        child: DropdownButton<Ficha>(
-      padding: const EdgeInsets.all(15),
-      hint: const Text('Seleccione la ficha de caracterización'),
-      value: selectedFicha,
-      onChanged: (Ficha? newValue) {
-        setState(() {
-          selectedFicha = newValue;
-        });
-      },
-      items: [
-        const DropdownMenuItem<Ficha>(
-          value: null,
-          child: Text('Seleccione la ficha de caracterización'),
-        ),
-        for (final ficha in fichas)
-          DropdownMenuItem<Ficha>(
-            value: ficha,
-            child: Text('${ficha.ficha} ${ficha.nombreCurso} '),
-          ),
-      ],
-    ));
-  }
-  
-    apiCargarMunicipios(Departamento selectedDepartamento) async {
-      final data = await appServices.getMunicipios(selectedDepartamento);
-      // print(data);
-      if (data.isNotEmpty){
-          setState(() {
-            municipiosResponse = data;
-          });
 
-      }
-        }
-
-
-  apiCargarSedes(Municipio selectedMunicipio) async {
-   final data = await appServices.getSedes(selectedMunicipio);
+  apiCargarSedes(Municipio municipio) async {
+   final data = await appServices.getSedes(municipio);
    if (data.isNotEmpty){
     setState(() {
       sedesResponse = data;
