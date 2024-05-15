@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:registro_asistencia_sena_movil/models/ambiente_response.dart';
 import 'package:registro_asistencia_sena_movil/models/bloque_response.dart';
 import 'package:registro_asistencia_sena_movil/models/departamento_response.dart';
+import 'package:registro_asistencia_sena_movil/models/entrada_salida_response.dart';
 import 'package:registro_asistencia_sena_movil/models/municipio_response.dart';
 import 'package:registro_asistencia_sena_movil/models/piso_response.dart';
 import 'package:registro_asistencia_sena_movil/models/sede_response.dart';
@@ -93,8 +94,30 @@ class AppServices {
       return [];
     }
   }
+// Funcion para cargar los registros de entrada salida
+Future<List<EntradaSalida>> getEntradaSalida(String instructorId, String fichaId) async {
+  try{
+    final response = await dio.get("${Constantes.baseUrl}/entradaSalida/apiIndex",
+    data: {"ficha_id" : fichaId, "instructor_id" : instructorId});
+    print("ficha");
+    print(fichaId);
+    print("instructor");
+    print(instructorId);
+    if (response.isSuccesfull()){
+      final entradaSalida = (response.data as List).map((e) => EntradaSalida.fromJson(e)).toList();
+      print("Datos obtenidos");
+      print(entradaSalida);
+      return entradaSalida;
+    }
+    print("error en la respuesta: ${response.statusCode} - ${response.statusMessage}");
+    return [];
+  }catch(e){
+    print("error en la solicitud: $e");
+    return [];
+  }
 }
 
+}
 extension ResponseExt on Response {
   bool isSuccesfull() {
     final status = statusCode ?? 400;

@@ -93,6 +93,8 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
       onChanged: (Departamento? newValue) {
         setState(() {
           selectedDepartamento = newValue;
+          selectedMunicipio = null;
+          selectedSede = null;
         });
         apiCargarMunicipios(selectedDepartamento!);
       },
@@ -122,6 +124,7 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
       onChanged: (Municipio? newValue) {
         setState(() {
           selectedMunicipio = newValue;
+          selectedSede = null;
         });
         apiCargarSedes(selectedMunicipio!);
       },

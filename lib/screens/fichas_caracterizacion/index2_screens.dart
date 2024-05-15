@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:registro_asistencia_sena_movil/models/ambiente_response.dart';
 import 'package:registro_asistencia_sena_movil/models/bloque_response.dart';
+import 'package:registro_asistencia_sena_movil/models/entrada_salida_response.dart';
 // import 'package:registro_asistencia_sena_movil/models/departamento_response.dart';
 // import 'package:flutter/widgets.dart';
 import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion_response.dart';
@@ -22,7 +23,8 @@ class Index2FichaCaracterizacion extends StatefulWidget {
   const Index2FichaCaracterizacion(
       {super.key,
       required this.loginResponse,
-      required this.ficha, required this.sedesResponse});
+      required this.ficha,
+      required this.sedesResponse});
   final LoginResponse loginResponse;
   final Ficha ficha;
   final List<Sede> sedesResponse;
@@ -31,9 +33,9 @@ class Index2FichaCaracterizacion extends StatefulWidget {
       _Index2FichaCaracterizacionState();
 }
 
-class _Index2FichaCaracterizacionState extends State<Index2FichaCaracterizacion> {
-
-@override
+class _Index2FichaCaracterizacionState
+    extends State<Index2FichaCaracterizacion> {
+  @override
   void initState() {
     super.initState();
     // sedesResponse = null;
@@ -41,7 +43,6 @@ class _Index2FichaCaracterizacionState extends State<Index2FichaCaracterizacion>
     pisoResponse = null;
     ambienteResponse = null;
   }
-
 
   // late List<Municipio>? municipiosResponse;
   late List<Sede> sedesResponse;
@@ -51,7 +52,7 @@ class _Index2FichaCaracterizacionState extends State<Index2FichaCaracterizacion>
   Sede? selectedSede;
   Bloque? selectedBloque;
   Piso? selectedPiso;
-  Ambiente? selecAmbiente;
+  Ambiente? selectedAmbiente;
 
   final AppServices appServices = AppServices();
 
@@ -72,7 +73,6 @@ class _Index2FichaCaracterizacionState extends State<Index2FichaCaracterizacion>
           seleccionarPiso(),
           seleccionarAmbiente(),
           botonRegistros(context)
-
         ],
       ),
       // getList(fichas),
@@ -80,7 +80,6 @@ class _Index2FichaCaracterizacionState extends State<Index2FichaCaracterizacion>
     );
   }
 
-  
   Widget seleccionarSede() {
     // if (sedesResponse == null){
     //   return Text("");
@@ -93,8 +92,11 @@ class _Index2FichaCaracterizacionState extends State<Index2FichaCaracterizacion>
       onChanged: (Sede? newValue) {
         setState(() {
           selectedSede = newValue;
+          selectedBloque = null;
+          selectedPiso = null;
+          selectedAmbiente = null;
+          apiCargarBloque(selectedSede!);
         });
-        apiCargarBloque(selectedSede!);
       },
       items: [
         const DropdownMenuItem<Sede>(
@@ -109,9 +111,9 @@ class _Index2FichaCaracterizacionState extends State<Index2FichaCaracterizacion>
       ],
     ));
   }
-  
+
   Widget seleccionarBloque() {
-    if (bloquesResponse == null){
+    if (bloquesResponse == null) {
       return const Text("");
     }
     return Card(
@@ -122,7 +124,8 @@ class _Index2FichaCaracterizacionState extends State<Index2FichaCaracterizacion>
       onChanged: (Bloque? newValue) {
         setState(() {
           selectedBloque = newValue;
-          selectedPiso = null; // Reset piso selection
+          selectedPiso = null;
+          selectedAmbiente = null;
           apiCargarPiso(newValue!);
         });
         // apiCargarPiso(selectedBloque!);
@@ -142,7 +145,7 @@ class _Index2FichaCaracterizacionState extends State<Index2FichaCaracterizacion>
   }
 
   Widget seleccionarPiso() {
-    if (pisoResponse == null){
+    if (pisoResponse == null) {
       return const Text("");
     }
     return Card(
@@ -153,8 +156,9 @@ class _Index2FichaCaracterizacionState extends State<Index2FichaCaracterizacion>
       onChanged: (Piso? newValue) {
         setState(() {
           selectedPiso = newValue;
+          selectedAmbiente = null;
+          apiCargarAmbientes(selectedPiso!);
         });
-        apiCargarAmbientes(selectedPiso!);
       },
       items: [
         const DropdownMenuItem<Piso>(
@@ -169,18 +173,19 @@ class _Index2FichaCaracterizacionState extends State<Index2FichaCaracterizacion>
       ],
     ));
   }
+
   Widget seleccionarAmbiente() {
-    if (ambienteResponse == null){
+    if (ambienteResponse == null) {
       return const Text("");
     }
     return Card(
         child: DropdownButton<Ambiente>(
       padding: const EdgeInsets.all(15),
       hint: const Text('Seleccione el piso'),
-      value: selecAmbiente,
+      value: selectedAmbiente,
       onChanged: (Ambiente? newValue) {
         setState(() {
-          selecAmbiente = newValue;
+          selectedAmbiente = newValue;
         });
         // apiCargarAmbientes(selectedPiso!);
       },
@@ -200,52 +205,46 @@ class _Index2FichaCaracterizacionState extends State<Index2FichaCaracterizacion>
 
   ElevatedButton botonRegistros(BuildContext context) {
     return ElevatedButton(
-          onPressed: () {
-            // Verifica si se ha seleccionado una ficha antes de llamar a apiIndex
-            // if (ficha != null) {
-            //   // Llama a la función apiIndex con los parámetros necesarios
-            //   apiIndex(
-            //       selectedFicha!,
-            //       widget.loginResponse.user.id.toString(),
-            //       widget.loginResponse,
-            //       context);
-            // } else {
-            //   // Si no se ha seleccionado ninguna ficha, muestra un mensaje o toma alguna otra acción
-            //   // Por ejemplo, podrías mostrar un SnackBar para notificar al usuario que debe seleccionar una ficha
-            //   ScaffoldMessenger.of(context).showSnackBar(
-            //     const SnackBar(
-            //       content: Text('Seleccione una ficha antes de continuar.'),
-            //     ),
-            //   );
-            // }
-          },
-          child: const Icon(Icons.list_outlined),
-        );
+      onPressed: () {
+        // Verifica si se ha seleccionado una ficha antes de llamar a apiIndex
+        if (selectedAmbiente != null) {
+          // Llama a la función apiIndex con los parámetros necesarios
+          apiIndex(widget.ficha, widget.loginResponse, selectedAmbiente!, context);
+        } else {
+          // Si no se ha seleccionado ninguna ficha, muestra un mensaje o toma alguna otra acción
+          // Por ejemplo, podrías mostrar un SnackBar para notificar al usuario que debe seleccionar una ficha
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Seleccione un ambiente antes de continuar.'),
+            ),
+          );
+        }
+      },
+      child: const Icon(Icons.list_outlined),
+    );
   }
-
 
   apiCargarSedes(Municipio municipio) async {
-   final data = await appServices.getSedes(municipio);
-   if (data.isNotEmpty){
-    setState(() {
-      sedesResponse = data;
-    });
-   }
+    final data = await appServices.getSedes(municipio);
+    if (data.isNotEmpty) {
+      setState(() {
+        sedesResponse = data;
+      });
+    }
   }
 
-apiCargarBloque(Sede selectedSede) async {
-   final data = await appServices.getBloques(selectedSede);
-   if (data.isNotEmpty) {
-    setState(() {
-      bloquesResponse = data;
-    });
-   }
-    
+  apiCargarBloque(Sede selectedSede) async {
+    final data = await appServices.getBloques(selectedSede);
+    if (data.isNotEmpty) {
+      setState(() {
+        bloquesResponse = data;
+      });
+    }
   }
 
   apiCargarPiso(Bloque selectedBloque) async {
     final data = await appServices.getPisos(selectedBloque);
-    if (data.isNotEmpty){
+    if (data.isNotEmpty) {
       setState(() {
         pisoResponse = data;
       });
@@ -254,35 +253,33 @@ apiCargarBloque(Sede selectedSede) async {
 
   apiCargarAmbientes(Piso selectedPiso) async {
     final data = await appServices.getAmbientes(selectedPiso);
-     if ( data.isNotEmpty ){
+    if (data.isNotEmpty) {
       setState(() {
         ambienteResponse = data;
       });
-     }
+    }
   }
 
-  void apiIndex(Ficha selectedFicha, String instructorId,LoginResponse loginResponse, BuildContext context) async {
-    final dio = Dio();
-    try {
-      final response = await dio.get(
-          "${Constantes.baseUrl}/fichaCaracterizacion/apiIndex/",
-          data: {'instructor_id': instructorId, 'ficha_id': selectedFicha.id});
-      // print(response);
-      if (response.statusCode == 200) {
-        final fichaCaracterizacion = FichaCaracterizacion.fromJson(response.data);
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => IndexEntradaSalida(
-                      loginResponse: loginResponse,
-                      ficha: selectedFicha,
-                    )));
-        print(fichaCaracterizacion);
-
-      }
-    } catch (e) {
-      // print("Error en las credenciales: $e");
-
-    }
+  void apiIndex(Ficha ficha, LoginResponse loginResponse,
+      Ambiente selectedAmbiente, BuildContext context) async {
+    final data = await appServices.getEntradaSalida(
+        loginResponse.user.id.toString(), ficha.id.toString());
+    final registros = data;
+    // print("user");
+    // print(loginResponse.user.id);
+    // print("ficha");
+    // print(ficha.id);
+    // print(registros);
+    // if (data.any((element) => true)) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => IndexEntradaSalida(
+                    loginResponse: loginResponse,
+                    ficha: ficha,
+                    registros: registros,
+                    ambiente: selectedAmbiente,
+                  )));
+    // }
   }
 }
