@@ -99,14 +99,8 @@ Future<List<EntradaSalida>> getEntradaSalida(String instructorId, String fichaId
   try{
     final response = await dio.get("${Constantes.baseUrl}/entradaSalida/apiIndex",
     data: {"ficha_id" : fichaId, "instructor_id" : instructorId});
-    print("ficha");
-    print(fichaId);
-    print("instructor");
-    print(instructorId);
     if (response.isSuccesfull()){
       final entradaSalida = (response.data as List).map((e) => EntradaSalida.fromJson(e)).toList();
-      print("Datos obtenidos");
-      print(entradaSalida);
       return entradaSalida;
     }
     print("error en la respuesta: ${response.statusCode} - ${response.statusMessage}");
@@ -114,6 +108,18 @@ Future<List<EntradaSalida>> getEntradaSalida(String instructorId, String fichaId
   }catch(e){
     print("error en la solicitud: $e");
     return [];
+  }
+}
+Future<bool>  apiStoreEntradaSalida(String fichaId, String aprendiz, String instructorId) async {
+  try {
+    final response = await dio.post("${Constantes.baseUrl}/entradaSalida/apiStoreEntradaSalida", 
+    data: {"ficha_caracterizacion_id" : fichaId, "aprendiz" : aprendiz, "instructor_user_id" : instructorId});
+    if (response.isSuccesfull()){
+      return true;
+    }
+    return false;
+  }catch(e) {
+    return false;
   }
 }
 
