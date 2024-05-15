@@ -33,6 +33,7 @@ class IndexEntradaSalida extends StatefulWidget {
 class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
   late List<EntradaSalida?> registros;
   final AppServices appServices = AppServices();
+  String? eventoSeleccionado;
   @override
   void initState() {
     super.initState();
@@ -63,29 +64,49 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
             ),
           ),
           getListadoRegistros(),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Radio<String>(
+                      value: 'entrada',
+                      groupValue: eventoSeleccionado,
+                      onChanged: (value) {
+                        setState(() {
+                          eventoSeleccionado = value;
+                        });
+                      },
+                    ),
+                    const Text('Entrada'),
+                  ],
+                ),
+                Row(
+                  children: [
+                    Radio<String>(
+                      value: 'salida',
+                      groupValue: eventoSeleccionado,
+                      onChanged: (value) {
+                        setState(() {
+                          eventoSeleccionado = value;
+                        });
+                      },
+                    ),
+                    const Text('Salida'),
+                  ],
+                ),
                 ElevatedButton(
                   onPressed: _scanQRCode,
                   child: const Icon(Icons.qr_code),
                 ),
+              ],
+            ),
+          ),
         ],
       ),
-      bottomNavigationBar: BottomAppBar(
-        child: SizedBox(
-          child: Row(children: [
-            Column(children: [
-              Text("entrada"),
-              Text("salida"),
-            ],),
-            Column(children: [
-              ElevatedButton(
-                  onPressed: _scanQRCode,
-                  child: const Icon(Icons.qr_code),
-                ),
-            ],)
-          ],)
-        ),
-      ),
-      // bottomNavigationBar: const footer(),
+      
+      bottomNavigationBar: const footer(),
     );
   }
 
