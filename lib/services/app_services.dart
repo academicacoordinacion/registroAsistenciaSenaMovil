@@ -3,6 +3,7 @@ import 'package:registro_asistencia_sena_movil/models/ambiente_response.dart';
 import 'package:registro_asistencia_sena_movil/models/bloque_response.dart';
 import 'package:registro_asistencia_sena_movil/models/departamento_response.dart';
 import 'package:registro_asistencia_sena_movil/models/entrada_salida_response.dart';
+import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion_response.dart';
 import 'package:registro_asistencia_sena_movil/models/municipio_response.dart';
 import 'package:registro_asistencia_sena_movil/models/piso_response.dart';
 import 'package:registro_asistencia_sena_movil/models/sede_response.dart';
@@ -79,15 +80,35 @@ class AppServices {
   }
 
 // function para cargar los ambientes
-  Future<List<Ambiente>> getAmbientes(Piso piso) async {
+  Future<List<Ambiente>> getAmbientes(int regionalID) async {
+          print("print de regional id: ${regionalID}");
     try {
       final response = await dio.get("${Constantes.baseUrl}/apiCargarAmbientes",
-          data: {'piso_id': piso.id});
-
+          data: {'regional_id': regionalID});
       if (response.isSuccesfull()) {
         final ambientes =
             (response.data as List).map((e) => Ambiente.fromJson(e)).toList();
         return ambientes;
+      }
+      return [];
+    } catch (e) {
+
+      print("error al traer los ambientes: error: ${e}" );
+      return [];
+    }
+  }
+  // funcion para cargar las fichas de caracterizacion
+Future<List<FichaCaracterizacion>> getFichasCaracterizacion(
+      int instructorId) async {
+    try {
+      final response = await dio.get(
+          "${Constantes.baseUrl}/fichaCaracterizacion/apiIndex/",
+          data: {"instructor_id": instructorId});
+      if (response.isSuccesfull()) {
+        final fichasCaracterizacion = (response.data as List)
+            .map((e) => FichaCaracterizacion.fromJson(e))
+            .toList();
+        return fichasCaracterizacion;
       }
       return [];
     } catch (e) {
@@ -122,6 +143,8 @@ Future<bool>  apiStoreEntradaSalida(String fichaId, String aprendiz, String inst
     return false;
   }
 }
+
+
 
 }
 extension ResponseExt on Response {

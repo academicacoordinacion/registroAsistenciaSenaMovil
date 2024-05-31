@@ -22,7 +22,7 @@ class IndexEntradaSalida extends StatefulWidget {
   });
 
   final LoginResponse loginResponse;
-  final Ficha ficha;
+  final FichaCaracterizacion ficha;
   final Ambiente ambiente;
   final List<EntradaSalida?> registros;
 
@@ -42,7 +42,7 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
 
   @override
   Widget build(BuildContext context) {
-    Ficha ficha = widget.ficha;
+    FichaCaracterizacion ficha = widget.ficha;
     DateTime fecha = DateTime.now();
 
     return Scaffold(
@@ -179,7 +179,7 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
 
   // Future<List>
   Future<void> apiIndex(
-    Ficha ficha,
+    FichaCaracterizacion ficha,
     LoginResponse loginResponse,
   ) async {
     final data = await appServices.getEntradaSalida(
@@ -195,14 +195,6 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
       String fichaId, String aprendiz, String instructorId) async {
     final data = await appServices.apiStoreEntradaSalida(
         fichaId, aprendiz, instructorId);
-    print("parada 2");
-    print("ficha");
-    print(fichaId);
-    print("aprendiz");
-    print(aprendiz);
-    print("instructor");
-    print(instructorId);
-    print(data);
     if (data) {
       return true;
     }

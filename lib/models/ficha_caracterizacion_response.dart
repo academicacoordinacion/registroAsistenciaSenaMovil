@@ -5,30 +5,14 @@
 // import 'package:meta/meta.dart';
 import 'dart:convert';
 
-FichaCaracterizacion fichaCaracterizacionFromJson(String str) =>
-    FichaCaracterizacion.fromJson(json.decode(str));
+List<FichaCaracterizacion> fichaCaracterizacionFromJson(String str) =>
+    List<FichaCaracterizacion>.from(
+        json.decode(str).map((x) => FichaCaracterizacion.fromJson(x)));
 
-String fichaCaracterizacionToJson(FichaCaracterizacion data) =>
-    json.encode(data.toJson());
+String fichaCaracterizacionToJson(List<FichaCaracterizacion> data) =>
+    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class FichaCaracterizacion {
-  final List<Ficha> fichas;
-
-  FichaCaracterizacion({
-    required this.fichas,
-  });
-
-  factory FichaCaracterizacion.fromJson(Map<String, dynamic> json) =>
-      FichaCaracterizacion(
-        fichas: List<Ficha>.from(json["fichas"].map((x) => Ficha.fromJson(x))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "fichas": List<dynamic>.from(fichas.map((x) => x.toJson())),
-      };
-}
-
-class Ficha {
   final int id;
   final String ficha;
   final String nombreCurso;
@@ -36,14 +20,13 @@ class Ficha {
   final dynamic horasFormacion;
   final dynamic cupo;
   final dynamic diasDeFormacion;
-  final Instructor instructor;
+  final UserCreateId userCreateId;
   final DateTime createdAt;
   final DateTime updatedAt;
   final dynamic deletedAt;
-  final String ambiente;
-  final String municipio;
+  final String regional;
 
-  Ficha({
+  FichaCaracterizacion({
     required this.id,
     required this.ficha,
     required this.nombreCurso,
@@ -51,15 +34,15 @@ class Ficha {
     required this.horasFormacion,
     required this.cupo,
     required this.diasDeFormacion,
-    required this.instructor,
+    required this.userCreateId,
     required this.createdAt,
     required this.updatedAt,
     required this.deletedAt,
-    required this.ambiente,
-    required this.municipio,
+    required this.regional,
   });
 
-  factory Ficha.fromJson(Map<String, dynamic> json) => Ficha(
+  factory FichaCaracterizacion.fromJson(Map<String, dynamic> json) =>
+      FichaCaracterizacion(
         id: json["id"],
         ficha: json["ficha"],
         nombreCurso: json["nombre_curso"],
@@ -67,12 +50,11 @@ class Ficha {
         horasFormacion: json["horas_formacion"],
         cupo: json["cupo"],
         diasDeFormacion: json["dias_de_formacion"],
-        instructor: Instructor.fromJson(json["Instructor"]),
+        userCreateId: UserCreateId.fromJson(json["user_create_id"]),
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
         deletedAt: json["deleted_at"],
-        ambiente: json["ambiente"],
-        municipio: json["municipio"],
+        regional: json["regional"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -83,32 +65,28 @@ class Ficha {
         "horas_formacion": horasFormacion,
         "cupo": cupo,
         "dias_de_formacion": diasDeFormacion,
-        "Instructor": instructor.toJson(),
+        "user_create_id": userCreateId.toJson(),
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
         "deleted_at": deletedAt,
-        "ambiente": ambiente,
-        "municipio": municipio,
+        "regional": regional,
       };
 }
 
-class Instructor {
-  final int id;
+class UserCreateId {
   final String primerNombre;
   final String segundoNombre;
   final String primerApellido;
   final String segundoApellido;
 
-  Instructor({
-    required this.id,
+  UserCreateId({
     required this.primerNombre,
     required this.segundoNombre,
     required this.primerApellido,
     required this.segundoApellido,
   });
 
-  factory Instructor.fromJson(Map<String, dynamic> json) => Instructor(
-        id: json["id"],
+  factory UserCreateId.fromJson(Map<String, dynamic> json) => UserCreateId(
         primerNombre: json["primer_nombre"],
         segundoNombre: json["segundo_nombre"],
         primerApellido: json["primer_apellido"],
@@ -116,7 +94,6 @@ class Instructor {
       );
 
   Map<String, dynamic> toJson() => {
-        "id": id,
         "primer_nombre": primerNombre,
         "segundo_nombre": segundoNombre,
         "primer_apellido": primerApellido,

@@ -9,10 +9,10 @@ import 'package:registro_asistencia_sena_movil/widgets/header.dart';
 class ShowFichaCaracterizacion extends StatelessWidget {
   const ShowFichaCaracterizacion({super.key, required this.loginResponse, required this.fichaCaracterizacion});
   final LoginResponse loginResponse;
-  final FichaCaracterizacion fichaCaracterizacion;
+  final List<FichaCaracterizacion> fichaCaracterizacion;
   @override
   Widget build(BuildContext context) {
-    List<Ficha> fichas = fichaCaracterizacion.fichas;
+    List<FichaCaracterizacion> fichas = fichaCaracterizacion;
     int no = 1;
     return Scaffold(
       appBar: PreferredSize(
@@ -64,8 +64,8 @@ class ShowFichaCaracterizacion extends StatelessWidget {
                           children: <Widget>[
                             Text(ficha.ficha),
                             Text(ficha.nombreCurso),
-                            Text(ficha.ambiente),
-                            Text(ficha.municipio),
+                            Text(ficha.regional),
+                            // Text(ficha.),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
