@@ -78,7 +78,7 @@ class InicioSesion extends StatelessWidget {
     print(response);
     if(response.statusCode == 200){
       final loginResponse = LoginResponse.fromJson(response.data);
-      Navigator.push (
+      Navigator.pushReplacement (
         context,
         MaterialPageRoute(builder: (context) => DashboardScreen(loginResponse: loginResponse ,))
       );
@@ -103,13 +103,5 @@ class InicioSesion extends StatelessWidget {
     
     }
   }
-  void _showToast(BuildContext context) {
-    final scaffold = ScaffoldMessenger.of(context);
-    scaffold.showSnackBar(
-      SnackBar(
-        content: const Text('Added to favorite'),
-        action: SnackBarAction(label: 'UNDO', onPressed: scaffold.hideCurrentSnackBar),
-      ),
-    );
-  }
+  
 }
