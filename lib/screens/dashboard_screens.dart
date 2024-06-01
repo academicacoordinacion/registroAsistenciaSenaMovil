@@ -124,7 +124,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final data = await appServices.getAmbientes(regionalID);
     return data.isNotEmpty ? data : null;
   }
-
   Future<List<FichaCaracterizacion>?> apiCargarFichasCaracterizacion(
       int instructorId) async {
     final data = await appServices.getFichasCaracterizacion(instructorId);

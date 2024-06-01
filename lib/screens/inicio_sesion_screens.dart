@@ -78,7 +78,7 @@ class InicioSesion extends StatelessWidget {
     print(response);
     if(response.statusCode == 200){
       final loginResponse = LoginResponse.fromJson(response.data);
-      Navigator.push (
+      Navigator.pushReplacement (
         context,
         MaterialPageRoute(builder: (context) => DashboardScreen(loginResponse: loginResponse ,))
       );

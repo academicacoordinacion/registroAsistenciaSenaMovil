@@ -11,6 +11,7 @@ import 'package:registro_asistencia_sena_movil/screens/entradaSalida/create_scre
 import 'package:registro_asistencia_sena_movil/services/app_services.dart';
 import 'package:registro_asistencia_sena_movil/widgets/footer.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
+import 'package:dropdown_search/dropdown_search.dart';
 
 class IndexEntradaSalida extends StatefulWidget {
   const IndexEntradaSalida({
