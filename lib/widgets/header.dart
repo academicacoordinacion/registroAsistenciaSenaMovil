@@ -19,7 +19,7 @@ class Header extends StatelessWidget {
       // title: const Text('Bienvenido'),
       actions: [
         IconButton(onPressed: () {
-          Navigator.push(
+          Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (context) => DashboardScreen(
@@ -65,7 +65,7 @@ Future<void> logout (BuildContext context) async {
     final response = await dio.post("${Constantes.baseUrl}/logout");
   
     if(response.statusCode == 200){
-      Navigator.push (
+      Navigator.pushReplacement (
         context,
         MaterialPageRoute(builder: (context) => InicioSesion())
       );
