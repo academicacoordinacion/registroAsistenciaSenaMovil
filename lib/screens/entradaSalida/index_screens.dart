@@ -12,15 +12,14 @@ import 'package:registro_asistencia_sena_movil/services/app_services.dart';
 import 'package:registro_asistencia_sena_movil/widgets/footer.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
 import 'package:dropdown_search/dropdown_search.dart';
-
 class IndexEntradaSalida extends StatefulWidget {
   const IndexEntradaSalida({
-    super.key,
+    Key? key,
     required this.loginResponse,
     required this.ficha,
     required this.registros,
     required this.ambiente,
-  });
+  }) : super(key: key);
 
   final LoginResponse loginResponse;
   final FichaCaracterizacion ficha;
@@ -35,6 +34,7 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
   late List<EntradaSalida?> registros;
   final AppServices appServices = AppServices();
   String? eventoSeleccionado;
+
   @override
   void initState() {
     super.initState();
@@ -48,65 +48,73 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize:
-            Size.fromHeight(MediaQuery.of(context).size.height * 0.1),
+        preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.1),
         child: Header(loginResponse: widget.loginResponse),
       ),
-      body: ListView(
-        children: [
-          Card(
-            child: Column(
-              children: [
-                Text('Ficha: ${ficha.ficha}'),
-                Text('Nombre del curso: ${ficha.nombreCurso}'),
-                Text('Ambiente:  ${widget.ambiente.title}'),
-                Text('Fecha: $fecha'),
-              ],
-            ),
-          ),
-          getListadoRegistros(),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Radio<String>(
-                      value: 'entrada',
-                      groupValue: eventoSeleccionado,
-                      onChanged: (value) {
-                        setState(() {
-                          eventoSeleccionado = value;
-                        });
-                      },
-                    ),
-                    const Text('Entrada'),
+                    Text('Ficha: ${ficha.ficha}'),
+                    Text('Nombre del curso: ${ficha.nombreCurso}'),
+                    Text('Ambiente:  ${widget.ambiente.title}'),
+                    Text('Fecha: $fecha'),
                   ],
                 ),
-                Row(
-                  children: [
-                    Radio<String>(
-                      value: 'salida',
-                      groupValue: eventoSeleccionado,
-                      onChanged: (value) {
-                        setState(() {
-                          eventoSeleccionado = value;
-                        });
-                      },
-                    ),
-                    const Text('Salida'),
-                  ],
-                ),
-                ElevatedButton(
-                  onPressed: _scanQRCode,
-                  child: const Icon(Icons.qr_code),
-                ),
-              ],
+              ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: getListadoRegistros(),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Radio<String>(
+                        value: 'entrada',
+                        groupValue: eventoSeleccionado,
+                        onChanged: (value) {
+                          setState(() {
+                            eventoSeleccionado = value;
+                          });
+                        },
+                      ),
+                      const Text('Entrada'),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Radio<String>(
+                        value: 'salida',
+                        groupValue: eventoSeleccionado,
+                        onChanged: (value) {
+                          setState(() {
+                            eventoSeleccionado = value;
+                          });
+                        },
+                      ),
+                      const Text('Salida'),
+                    ],
+                  ),
+                  ElevatedButton(
+                    onPressed: _scanQRCode,
+                    child: const Icon(Icons.qr_code),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
-      
       bottomNavigationBar: const footer(),
     );
   }
@@ -142,25 +150,19 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
   }
 
   Future<void> _scanQRCode() async {
-    // Llamar a la función para escanear QR
-    // Obtener el resultado del escaneo
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => QRViewExample()),
     );
-    print("parada 1");
-    print(result);
     if (result != null) {
-      // Llamar a la API para insertar el nuevo registro
-      final success = await apiStoreEntradaSalida(widget.ficha.id.toString(),
-          result, widget.loginResponse.user.id.toString());
-      print("parada 3");
-      print(success);
-
+      final success = await apiStoreEntradaSalida(
+        widget.ficha.id.toString(),
+        result,
+        widget.loginResponse.user.id.toString(),
+      );
       if (success) {
         await apiIndex(widget.ficha, widget.loginResponse);
       } else {
-        // Manejar el caso de que la inserción falló
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
@@ -178,13 +180,14 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
     }
   }
 
-  // Future<List>
   Future<void> apiIndex(
     FichaCaracterizacion ficha,
     LoginResponse loginResponse,
   ) async {
     final data = await appServices.getEntradaSalida(
-        loginResponse.user.id.toString(), ficha.id.toString());
+      loginResponse.user.id.toString(),
+      ficha.id.toString(),
+    );
     if (data.isNotEmpty) {
       setState(() {
         registros = data;
@@ -193,9 +196,9 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
   }
 
   Future<bool> apiStoreEntradaSalida(
-      String fichaId, String aprendiz, String instructorId) async {
+    String  fichaId, String aprendiz, String instructorId) async {
     final data = await appServices.apiStoreEntradaSalida(
-        fichaId, aprendiz, instructorId);
+      fichaId, aprendiz, instructorId);
     if (data) {
       return true;
     }
