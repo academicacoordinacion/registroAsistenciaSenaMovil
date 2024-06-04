@@ -10,11 +10,11 @@ import 'package:registro_asistencia_sena_movil/widgets/header.dart';
 
 class IndexFichaCaracterizacion extends StatefulWidget {
   const IndexFichaCaracterizacion({
-    super.key,
+    Key? key,
     required this.loginResponse,
     required this.fichasCaracterizacion,
     required this.ambientes,
-  });
+  }) : super(key: key);
 
   final LoginResponse loginResponse;
   final List<FichaCaracterizacion> fichasCaracterizacion;
@@ -32,11 +32,6 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
   final AppServices appServices = AppServices();
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
@@ -44,12 +39,19 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
             Size.fromHeight(MediaQuery.of(context).size.height * 0.1),
         child: Header(loginResponse: widget.loginResponse),
       ),
-      body: ListView(
-        children: [
-          seleccionarFicha(widget.fichasCaracterizacion),
-          seleccionarAmbiente(widget.ambientes),
-          botonRegistros(context),
-        ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              seleccionarFicha(widget.fichasCaracterizacion),
+              const SizedBox(height: 20),
+              seleccionarAmbiente(widget.ambientes),
+              const SizedBox(height: 20),
+              botonRegistros(context),
+            ],
+          ),
+        ),
       ),
       bottomNavigationBar: const footer(),
     );
