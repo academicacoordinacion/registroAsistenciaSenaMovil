@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/screens/dashboard_screens.dart';
 import 'package:registro_asistencia_sena_movil/screens/inicio_sesion_screens.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

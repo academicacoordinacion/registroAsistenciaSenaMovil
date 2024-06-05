@@ -13,7 +13,7 @@ class ShowFichaCaracterizacion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<FichaCaracterizacion> fichas = fichaCaracterizacion;
-    int no = 1;
+    // int no = 1;
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(MediaQuery.of(context).size.height *
