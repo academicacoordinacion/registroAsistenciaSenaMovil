@@ -143,6 +143,22 @@ Future<bool>  apiStoreEntradaSalida(String fichaId, String aprendiz, String inst
     return false;
   }
 }
+Future<bool> apiUpdateEntradaSalida(
+      String aprendiz) async {
+    try {
+      final response = await dio.post(
+          "${Constantes.baseUrl}/entradaSalida/apiUpdateEntradaSalida",
+          data: {
+            "aprendiz": aprendiz,
+          });
+      if (response.isSuccesfull()) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
 
 
 

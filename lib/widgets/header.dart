@@ -35,6 +35,11 @@ class Header extends StatelessWidget {
           onSelected: (String value) {
             if (value == 'perfil') {
               // Realizar la navegación a la página de perfil u otra acción deseada
+              Fluttertoast.showToast(
+                msg: "Aún en desarróllo...",
+                toastLength: Toast.LENGTH_LONG,
+                gravity: ToastGravity.TOP,
+              );
             } else if (value == 'logout') {
               logout(context);
             }

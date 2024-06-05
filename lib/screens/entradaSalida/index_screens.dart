@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 // import 'package:intl/date_symbol_data_local.dart';
 // import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:registro_asistencia_sena_movil/models/ambiente_response.dart';
@@ -9,9 +10,8 @@ import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion_resp
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/screens/entradaSalida/create_screens.dart';
 import 'package:registro_asistencia_sena_movil/services/app_services.dart';
-import 'package:registro_asistencia_sena_movil/widgets/footer.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
-import 'package:dropdown_search/dropdown_search.dart';
+
 class IndexEntradaSalida extends StatefulWidget {
   const IndexEntradaSalida({
     Key? key,
@@ -39,16 +39,17 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
   void initState() {
     super.initState();
     registros = widget.registros;
+    eventoSeleccionado = 'entrada';
   }
-
-  @override
+@override
   Widget build(BuildContext context) {
     FichaCaracterizacion ficha = widget.ficha;
     DateTime fecha = DateTime.now();
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(MediaQuery.of(context).size.height * 0.1),
+        preferredSize:
+            Size.fromHeight(MediaQuery.of(context).size.height * 0.1),
         child: Header(loginResponse: widget.loginResponse),
       ),
       body: SingleChildScrollView(
@@ -73,9 +74,18 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
               padding: const EdgeInsets.all(8.0),
               child: getListadoRegistros(),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
+          ],
+        ),
+      ),
+      bottomNavigationBar: Container(
+        color: Colors.grey.shade200,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     children: [
@@ -105,19 +115,33 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
                       const Text('Salida'),
                     ],
                   ),
-                  ElevatedButton(
-                    onPressed: _scanQRCode,
-                    child: const Icon(Icons.qr_code),
-                  ),
                 ],
               ),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: scanQRCode,
+                child: const Icon(Icons.qr_code),
+              ),
+         ElevatedButton(
+                onPressed: () {
+                  // Acción del botón de enviar asistencia
+                  Fluttertoast.showToast(
+                    msg: "Aún en desarróllo...",
+                    toastLength: Toast.LENGTH_LONG,
+                    gravity: ToastGravity.TOP,
+                  );
+                },
+                child: const Icon(Icons.checklist),
+              ),
+
+
+
+            ],
+          ),
         ),
       ),
-      bottomNavigationBar: const footer(),
     );
   }
+
 
   Widget getListadoRegistros() {
     return Card(
@@ -149,17 +173,27 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
     );
   }
 
-  Future<void> _scanQRCode() async {
+  Future<void> scanQRCode() async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => QRViewExample()),
     );
+
     if (result != null) {
-      final success = await apiStoreEntradaSalida(
-        widget.ficha.id.toString(),
-        result,
-        widget.loginResponse.user.id.toString(),
-      );
+      bool success = false;
+
+      if (eventoSeleccionado == 'entrada') {
+        success = await apiStoreEntradaSalida(
+          widget.ficha.id.toString(),
+          result,
+          widget.loginResponse.user.id.toString(),
+        );
+      } else if (eventoSeleccionado == 'salida') {
+        success = await apiUpdateEntradaSalida(
+          result,
+        );
+      }
+
       if (success) {
         await apiIndex(widget.ficha, widget.loginResponse);
       } else {
@@ -196,9 +230,17 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
   }
 
   Future<bool> apiStoreEntradaSalida(
-    String  fichaId, String aprendiz, String instructorId) async {
+      String fichaId, String aprendiz, String instructorId) async {
     final data = await appServices.apiStoreEntradaSalida(
-      fichaId, aprendiz, instructorId);
+        fichaId, aprendiz, instructorId);
+    if (data) {
+      return true;
+    }
+    return false;
+  }
+
+  Future<bool> apiUpdateEntradaSalida(String aprendiz) async {
+    final data = await appServices.apiUpdateEntradaSalida(aprendiz);
     if (data) {
       return true;
     }
