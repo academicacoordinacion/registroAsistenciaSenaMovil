@@ -24,7 +24,6 @@ class FichaCaracterizacion {
   final DateTime createdAt;
   final DateTime updatedAt;
   final dynamic deletedAt;
-  final String regional;
 
   FichaCaracterizacion({
     required this.id,
@@ -38,7 +37,6 @@ class FichaCaracterizacion {
     required this.createdAt,
     required this.updatedAt,
     required this.deletedAt,
-    required this.regional,
   });
 
   factory FichaCaracterizacion.fromJson(Map<String, dynamic> json) =>
@@ -54,7 +52,6 @@ class FichaCaracterizacion {
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
         deletedAt: json["deleted_at"],
-        regional: json["regional"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -69,7 +66,6 @@ class FichaCaracterizacion {
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
         "deleted_at": deletedAt,
-        "regional": regional,
       };
 }
 

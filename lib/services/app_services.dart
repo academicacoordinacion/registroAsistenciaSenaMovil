@@ -81,13 +81,14 @@ class AppServices {
 
 // function para cargar los ambientes
   Future<List<Ambiente>> getAmbientes(int regionalID) async {
-          print("print de regional id: ${regionalID}");
+          
     try {
       final response = await dio.get("${Constantes.baseUrl}/apiCargarAmbientes",
           data: {'regional_id': regionalID});
       if (response.isSuccesfull()) {
         final ambientes =
             (response.data as List).map((e) => Ambiente.fromJson(e)).toList();
+            // print(ambientes);
         return ambientes;
       }
       return [];
@@ -100,6 +101,9 @@ class AppServices {
   // funcion para cargar las fichas de caracterizacion
 Future<List<FichaCaracterizacion>> getFichasCaracterizacion(
       int instructorId) async {
+    //     print("hola mundo");
+    // print("print de instructor id: ${instructorId}");
+    // print("hola mundo");
     try {
       final response = await dio.get(
           "${Constantes.baseUrl}/fichaCaracterizacion/apiIndex/",
@@ -108,10 +112,15 @@ Future<List<FichaCaracterizacion>> getFichasCaracterizacion(
         final fichasCaracterizacion = (response.data as List)
             .map((e) => FichaCaracterizacion.fromJson(e))
             .toList();
+            // print(fichasCaracterizacion);
         return fichasCaracterizacion;
+      }else{  
+        
+        return [];
       }
-      return [];
+      // return [];
     } catch (e) {
+      print("error al traer las fichas de caracterizacion : error: ${e}");
       return [];
     }
   }

@@ -64,7 +64,6 @@ class ShowFichaCaracterizacion extends StatelessWidget {
                           children: <Widget>[
                             Text(ficha.ficha),
                             Text(ficha.nombreCurso),
-                            Text(ficha.regional),
                             // Text(ficha.),
                             Column(
                               mainAxisAlignment: MainAxisAlignment.end,

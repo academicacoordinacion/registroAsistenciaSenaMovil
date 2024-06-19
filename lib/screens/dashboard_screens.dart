@@ -94,6 +94,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   // index ficha caracterizacion
   void apiIndex(int instructorId, int regionalID, BuildContext context) async {
+
+    // print("print de regional id:   ${regionalID}");
+    // print("print de instructor id:   ${instructorId}");
     try {
       final ambientes = await apiCargarAmbientes(regionalID);
       final fichasCaracterizacion =
@@ -110,11 +113,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         );
       } else {
+        if (ambientes == null){
+
         Fluttertoast.showToast(
-          msg: "Error al cargar los datos",
+          msg: "No se han encontrado ambientes disponibles.",
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.TOP,
         );
+        }
+        if (fichasCaracterizacion == null) {
+          Fluttertoast.showToast(
+            msg: "No tiene asignado fichas de caracterización, por favor comuniquese y solicite que le asignen fichas de caracterización.",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
+          );
+        }
       }
     } catch (e) {
       print("Error al buscar las fichas: $e");
