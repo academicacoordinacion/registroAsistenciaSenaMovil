@@ -103,7 +103,7 @@ class InicioSesion extends StatelessWidget {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String loginResponseJson = jsonEncode(loginResponse.toJson());
         await prefs.setString('loginResponse', loginResponseJson);
-
+        
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -116,6 +116,7 @@ class InicioSesion extends StatelessWidget {
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.TOP,
         );
+
       }
     } catch (e) {
       print(e);

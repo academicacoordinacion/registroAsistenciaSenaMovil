@@ -80,9 +80,11 @@ class AppServices {
   }
 
 // function para cargar los ambientes
-  Future<List<Ambiente>> getAmbientes(int regionalID) async {
+  Future<List<Ambiente>> getAmbientes(int regionalID, String authToken) async {
           
     try {
+
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
       final response = await dio.get("${Constantes.baseUrl}/apiCargarAmbientes",
           data: {'regional_id': regionalID});
       if (response.isSuccesfull()) {
@@ -100,11 +102,13 @@ class AppServices {
   }
   // funcion para cargar las fichas de caracterizacion
 Future<List<FichaCaracterizacion>> getFichasCaracterizacion(
-      int instructorId) async {
+      int instructorId, String authToken) async {
     //     print("hola mundo");
     // print("print de instructor id: ${instructorId}");
     // print("hola mundo");
     try {
+      
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
       final response = await dio.get(
           "${Constantes.baseUrl}/fichaCaracterizacion/apiIndex/",
           data: {"instructor_id": instructorId});

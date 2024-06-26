@@ -22,6 +22,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   final AppServices appServices = AppServices();
 
   @override
+  void initState() {
+    super.initState();
+    mostrarAlertaPerfil(widget.loginResponse);
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: PreferredSize(
@@ -74,6 +80,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               apiIndex(
                                   widget.loginResponse.persona.instructorId,
                                   widget.loginResponse.persona.regionalId,
+                                  widget.loginResponse.token,
                                   context);
                             },
                             child: const Text('Comencemos'),
@@ -93,14 +100,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   // index ficha caracterizacion
-  void apiIndex(int instructorId, int regionalID, BuildContext context) async {
-
+  void apiIndex(int instructorId, int regionalID,String authToken, BuildContext context) async {
     // print("print de regional id:   ${regionalID}");
-    // print("print de instructor id:   ${instructorId}");
+    print("print de instructor id:   ${authToken}");
     try {
-      final ambientes = await apiCargarAmbientes(regionalID);
+      final ambientes = await apiCargarAmbientes(regionalID, authToken);
       final fichasCaracterizacion =
-          await apiCargarFichasCaracterizacion(instructorId);
+          await apiCargarFichasCaracterizacion(instructorId, authToken);
       if (ambientes != null && fichasCaracterizacion != null) {
         Navigator.push(
           context,
@@ -113,17 +119,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         );
       } else {
-        if (ambientes == null){
-
-        Fluttertoast.showToast(
-          msg: "No se han encontrado ambientes disponibles.",
-          toastLength: Toast.LENGTH_LONG,
-          gravity: ToastGravity.TOP,
-        );
+        if (ambientes == null) {
+          Fluttertoast.showToast(
+            msg: "No se han encontrado ambientes disponibles.",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.TOP,
+          );
         }
         if (fichasCaracterizacion == null) {
           Fluttertoast.showToast(
-            msg: "No tiene asignado fichas de caracterización, por favor comuniquese y solicite que le asignen fichas de caracterización.",
+            msg:
+                "No tiene asignado fichas de caracterización, por favor comuniquese y solicite que le asignen fichas de caracterización.",
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.TOP,
           );
@@ -140,14 +146,45 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  Future<List<Ambiente>?> apiCargarAmbientes(int regionalID) async {
-    final data = await appServices.getAmbientes(regionalID);
+  Future<List<Ambiente>?> apiCargarAmbientes(int regionalID, String authToken) async {
+    final data = await appServices.getAmbientes(regionalID, authToken);
     return data.isNotEmpty ? data : null;
   }
 
   Future<List<FichaCaracterizacion>?> apiCargarFichasCaracterizacion(
-      int instructorId) async {
-    final data = await appServices.getFichasCaracterizacion(instructorId);
+      int instructorId, String authToken) async {
+    final data = await appServices.getFichasCaracterizacion(instructorId, authToken);
     return data.isNotEmpty ? data : null;
+  }
+
+  void mostrarAlertaPerfil(LoginResponse loginResponse) {
+    if ((loginResponse.persona.segundoNombre == null ||
+            loginResponse.persona.segundoNombre!.isEmpty) &&
+        (loginResponse.persona.primerApellido == null ||
+            loginResponse.persona.primerApellido!.isEmpty) &&
+        (loginResponse.persona.segundoApellido == null ||
+            loginResponse.persona.segundoApellido!.isEmpty) &&
+            (loginResponse.persona.fechaDeNacimiento == null)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('Perfil Incompleto'),
+              content: const Text(
+                  'Su perfil está incompleto. Por favor, actualice su información y continue disfrutando de la aplicación.'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('Aceptar'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      });
+    }
   }
 }
