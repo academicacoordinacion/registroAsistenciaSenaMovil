@@ -27,31 +27,151 @@ class _ShowPerfilState extends State<ShowPerfil> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: PreferredSize(
         preferredSize:
             Size.fromHeight(MediaQuery.of(context).size.height * 0.1),
         child: Header(loginResponse: widget.loginResponse),
       ),
-      body: const SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Card(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
+                  children: const [
+                    Text(
+                      "Mi perfil",
+                      style:
+                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              child: Container(
+                child: Column(
                   children: [
-                  Text("Aquí ira el contenido del perfil")
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                              "Primer Nombre: ${widget.loginResponse.persona.primerNombre}"),
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                              "Segundo Nombre: ${widget.loginResponse.persona.segundoNombre}"),
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                              "Primer Apellido: ${widget.loginResponse.persona.primerApellido}"),
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                              "Segundo Apellido: ${widget.loginResponse.persona.segundoApellido}"),
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                              "Tipo de documento: ${widget.loginResponse.persona.tipoDocumento}"),
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                              "Número de documento: ${widget.loginResponse.persona.numeroDocumento}"),
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                              "Fecha de Nacimiento: ${widget.loginResponse.persona.fechaDeNacimiento}"),
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                              "Genero: ${widget.loginResponse.persona.genero}"),
+                        ),
+                      ),
+                    ),
+                    Divider(),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                              "Correo Institucional: ${widget.loginResponse.persona.email}"),
+                        ),
+                      ),
+                    ),
+                    Divider(),
                   ],
                 ),
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
-              child: const Text("ya veremos como hacemos esto"),
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      Text("ya veremos como hacemos esto"),
+                    ],
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -63,19 +183,16 @@ class _ShowPerfilState extends State<ShowPerfil> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              
               ElevatedButton(
-                onPressed: (){
+                onPressed: () {
                   // redirigir a la screen de editar perfil
                 },
                 child: const Icon(Icons.edit),
               ),
-              
             ],
           ),
         ),
       ),
     );
   }
-
 }
