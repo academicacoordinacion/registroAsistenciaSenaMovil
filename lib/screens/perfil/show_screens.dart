@@ -37,140 +37,102 @@ class _ShowPerfilState extends State<ShowPerfil> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
-                  children: const [
-                    Text(
-                      "Mi perfil",
-                      style:
-                          TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              child: Container(
-                child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                              "Primer Nombre: ${widget.loginResponse.persona.primerNombre}"),
+                      padding: EdgeInsets.all(16.0),
+                      child: Text(
+                        "Mi perfil",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                              "Segundo Nombre: ${widget.loginResponse.persona.segundoNombre}"),
-                        ),
-                      ),
-                    ),
-                    Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                              "Primer Apellido: ${widget.loginResponse.persona.primerApellido}"),
-                        ),
-                      ),
-                    ),
-                    Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                              "Segundo Apellido: ${widget.loginResponse.persona.segundoApellido}"),
-                        ),
-                      ),
-                    ),
-                    Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                              "Tipo de documento: ${widget.loginResponse.persona.tipoDocumento}"),
-                        ),
-                      ),
-                    ),
-                    Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                              "Número de documento: ${widget.loginResponse.persona.numeroDocumento}"),
-                        ),
-                      ),
-                    ),
-                    Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                              "Fecha de Nacimiento: ${widget.loginResponse.persona.fechaDeNacimiento}"),
-                        ),
-                      ),
-                    ),
-                    Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                              "Genero: ${widget.loginResponse.persona.genero}"),
-                        ),
-                      ),
-                    ),
-                    Divider(),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Text(
-                              "Correo Institucional: ${widget.loginResponse.persona.email}"),
-                        ),
-                      ),
-                    ),
-                    Divider(),
                   ],
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text("ya veremos como hacemos esto"),
-                    ],
+            Container(
+              margin: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  Card(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildProfileRow(
+                            Icons.person,
+                            "Primer Nombre",
+                            widget.loginResponse.persona?.primerNombre ?? "",
+                          ),
+                          const Divider(),
+                          _buildProfileRow(
+                            Icons.person,
+                            "Segundo Nombre",
+                            widget.loginResponse.persona?.segundoNombre ?? "",
+                          ),
+                          const Divider(),
+                          _buildProfileRow(
+                            Icons.person,
+                            "Primer Apellido",
+                            widget.loginResponse.persona?.primerApellido ?? "",
+                          ),
+                          const Divider(),
+                          _buildProfileRow(
+                            Icons.person,
+                            "Segundo Apellido",
+                            widget.loginResponse.persona?.segundoApellido ?? "",
+                          ),
+                          const Divider(),
+                          _buildProfileRow(
+                            Icons.assignment_ind,
+                            "Tipo de documento",
+                            widget.loginResponse.persona?.tipoDocumento ?? "",
+                          ),
+                          const Divider(),
+                          _buildProfileRow(
+                            Icons.assignment,
+                            "Número de documento",
+                            widget.loginResponse.persona?.numeroDocumento ?? "",
+                          ),
+                          const Divider(),
+                          _buildProfileRow(
+                            Icons.cake,
+                            "Fecha de Nacimiento",
+                            widget.loginResponse.persona?.fechaDeNacimiento
+                                    ?.toString() ??
+                                "",
+                          ),
+                          const Divider(),
+                          _buildProfileRow(
+                            Icons.wc,
+                            "Genero",
+                            widget.loginResponse.persona?.genero ?? "",
+                          ),
+                          const Divider(),
+                          _buildProfileRow(
+                            Icons.email,
+                            "Correo Institucional",
+                            widget.loginResponse.persona?.email ?? "",
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           ],
@@ -193,6 +155,29 @@ class _ShowPerfilState extends State<ShowPerfil> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildProfileRow(IconData icon, String label, String value) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: Colors.blueAccent),
+            const SizedBox(width: 10),
+            Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Text(
+          value,
+          style: const TextStyle(color: Colors.grey),
+        ),
+      ],
     );
   }
 }
