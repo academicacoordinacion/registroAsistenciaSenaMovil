@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:registro_asistencia_sena_movil/models/entrada_salida_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
-import 'package:registro_asistencia_sena_movil/screens/perfil/edit_screens.dart';
 import 'package:registro_asistencia_sena_movil/services/app_services.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
 
-class ShowPerfil extends StatefulWidget {
-  const ShowPerfil({
+class EditPerfil extends StatefulWidget {
+  const EditPerfil({
     Key? key,
     required this.loginResponse,
   }) : super(key: key);
@@ -14,16 +14,61 @@ class ShowPerfil extends StatefulWidget {
   final LoginResponse loginResponse;
 
   @override
-  State<ShowPerfil> createState() => _ShowPerfilState();
+  State<EditPerfil> createState() => _EditPerfilState();
 }
 
-class _ShowPerfilState extends State<ShowPerfil> {
+class _EditPerfilState extends State<EditPerfil> {
   late List<EntradaSalida?> registros;
   final AppServices appServices = AppServices();
+
+  late TextEditingController _primerNombreController;
+  late TextEditingController _segundoNombreController;
+  late TextEditingController _primerApellidoController;
+  late TextEditingController _segundoApellidoController;
+  late TextEditingController _tipoDocumentoController;
+  late TextEditingController _numeroDocumentoController;
+  late TextEditingController _fechaDeNacimientoController;
+  late TextEditingController _generoController;
+  late TextEditingController _emailController;
 
   @override
   void initState() {
     super.initState();
+    _primerNombreController = TextEditingController(
+        text: widget.loginResponse.persona?.primerNombre ?? "");
+    _segundoNombreController = TextEditingController(
+        text: widget.loginResponse.persona?.segundoNombre ?? "");
+    _primerApellidoController = TextEditingController(
+        text: widget.loginResponse.persona?.primerApellido ?? "");
+    _segundoApellidoController = TextEditingController(
+        text: widget.loginResponse.persona?.segundoApellido ?? "");
+    _tipoDocumentoController = TextEditingController(
+        text: widget.loginResponse.persona?.tipoDocumento ?? "");
+    _numeroDocumentoController = TextEditingController(
+        text: widget.loginResponse.persona?.numeroDocumento ?? "");
+    _fechaDeNacimientoController = TextEditingController(
+        text: widget.loginResponse.persona?.fechaDeNacimiento != null
+            ? DateFormat('yyyy-MM-dd')
+                .format(widget.loginResponse.persona!.fechaDeNacimiento!)
+            : "");
+    _generoController =
+        TextEditingController(text: widget.loginResponse.persona?.genero ?? "");
+    _emailController =
+        TextEditingController(text: widget.loginResponse.persona?.email ?? "");
+  }
+
+  @override
+  void dispose() {
+    _primerNombreController.dispose();
+    _segundoNombreController.dispose();
+    _primerApellidoController.dispose();
+    _segundoApellidoController.dispose();
+    _tipoDocumentoController.dispose();
+    _numeroDocumentoController.dispose();
+    _fechaDeNacimientoController.dispose();
+    _generoController.dispose();
+    _emailController.dispose();
+    super.dispose();
   }
 
   @override
@@ -77,57 +122,55 @@ class _ShowPerfilState extends State<ShowPerfil> {
                           _buildProfileRow(
                             Icons.person,
                             "Primer Nombre",
-                            widget.loginResponse.persona?.primerNombre ?? "",
+                            _primerNombreController,
                           ),
                           const Divider(),
                           _buildProfileRow(
                             Icons.person,
                             "Segundo Nombre",
-                            widget.loginResponse.persona?.segundoNombre ?? "",
+                            _segundoNombreController,
                           ),
                           const Divider(),
                           _buildProfileRow(
                             Icons.person,
                             "Primer Apellido",
-                            widget.loginResponse.persona?.primerApellido ?? "",
+                            _primerApellidoController,
                           ),
                           const Divider(),
                           _buildProfileRow(
                             Icons.person,
                             "Segundo Apellido",
-                            widget.loginResponse.persona?.segundoApellido ?? "",
+                            _segundoApellidoController,
                           ),
                           const Divider(),
                           _buildProfileRow(
                             Icons.assignment_ind,
                             "Tipo de documento",
-                            widget.loginResponse.persona?.tipoDocumento ?? "",
+                            _tipoDocumentoController,
                           ),
                           const Divider(),
                           _buildProfileRow(
                             Icons.assignment,
                             "Número de documento",
-                            widget.loginResponse.persona?.numeroDocumento ?? "",
+                            _numeroDocumentoController,
                           ),
                           const Divider(),
-                          _buildProfileRow(
+                          _buildDatePickerRow(
                             Icons.cake,
                             "Fecha de Nacimiento",
-                            widget.loginResponse.persona?.fechaDeNacimiento
-                                    ?.toString() ??
-                                "",
+                            _fechaDeNacimientoController,
                           ),
                           const Divider(),
                           _buildProfileRow(
                             Icons.wc,
                             "Genero",
-                            widget.loginResponse.persona?.genero ?? "",
+                            _generoController,
                           ),
                           const Divider(),
                           _buildProfileRow(
                             Icons.email,
                             "Correo Institucional",
-                            widget.loginResponse.persona?.email ?? "",
+                            _emailController,
                           ),
                         ],
                       ),
@@ -148,16 +191,9 @@ class _ShowPerfilState extends State<ShowPerfil> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditPerfil(
-                        loginResponse: widget.loginResponse,
-                      ),
-                    ),
-                  );
+                  // guardar cambios
                 },
-                child: const Icon(Icons.edit),
+                child: const Icon(Icons.save),
               ),
             ],
           ),
@@ -166,7 +202,9 @@ class _ShowPerfilState extends State<ShowPerfil> {
     );
   }
 
-  Widget _buildProfileRow(IconData icon, String label, String value) {
+  Widget _buildProfileRow(
+      IconData icon, String label, TextEditingController controller,
+      {bool isDate = false}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -181,9 +219,54 @@ class _ShowPerfilState extends State<ShowPerfil> {
           ],
         ),
         const SizedBox(height: 5),
-        Text(
-          value,
-          style: const TextStyle(color: Colors.grey),
+        TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: label,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDatePickerRow(
+      IconData icon, String label, TextEditingController controller) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: Colors.blueAccent),
+            const SizedBox(width: 10),
+            Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        GestureDetector(
+          onTap: () async {
+            DateTime? pickedDate = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(1900),
+              lastDate: DateTime(2100),
+            );
+            if (pickedDate != null) {
+              setState(() {
+                controller.text = DateFormat('yyyy-MM-dd').format(pickedDate);
+              });
+            }
+          },
+          child: AbsorbPointer(
+            child: TextField(
+              controller: controller,
+              decoration: InputDecoration(
+                hintText: label,
+              ),
+            ),
+          ),
         ),
       ],
     );

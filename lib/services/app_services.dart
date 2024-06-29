@@ -4,6 +4,7 @@ import 'package:registro_asistencia_sena_movil/models/bloque_response.dart';
 import 'package:registro_asistencia_sena_movil/models/departamento_response.dart';
 import 'package:registro_asistencia_sena_movil/models/entrada_salida_response.dart';
 import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion_response.dart';
+import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/models/municipio_response.dart';
 import 'package:registro_asistencia_sena_movil/models/piso_response.dart';
 import 'package:registro_asistencia_sena_movil/models/sede_response.dart';
@@ -17,9 +18,10 @@ class AppServices {
     try {
       final response = await dio.get(
           "${Constantes.baseUrl}/apiCargarMunicipios",
-          data: {"departamento_id" : departamento.id});
+          data: {"departamento_id": departamento.id});
       if (response.isSuccesfull()) {
-        final municipios = (response.data as List).map((e) => Municipio.fromJson(e)).toList();
+        final municipios =
+            (response.data as List).map((e) => Municipio.fromJson(e)).toList();
         // print("primer ");
         // print(municipios);
         return municipios;
@@ -81,33 +83,30 @@ class AppServices {
 
 // function para cargar los ambientes
   Future<List<Ambiente>> getAmbientes(int regionalID, String authToken) async {
-          
     try {
-
       dio.options.headers['Authorization'] = 'Bearer $authToken';
       final response = await dio.get("${Constantes.baseUrl}/apiCargarAmbientes",
           data: {'regional_id': regionalID});
       if (response.isSuccesfull()) {
         final ambientes =
             (response.data as List).map((e) => Ambiente.fromJson(e)).toList();
-            // print(ambientes);
+        // print(ambientes);
         return ambientes;
       }
       return [];
     } catch (e) {
-
-      print("error al traer los ambientes: error: ${e}" );
+      print("error al traer los ambientes: error: ${e}");
       return [];
     }
   }
+
   // funcion para cargar las fichas de caracterizacion
-Future<List<FichaCaracterizacion>> getFichasCaracterizacion(
+  Future<List<FichaCaracterizacion>> getFichasCaracterizacion(
       int instructorId, String authToken) async {
     //     print("hola mundo");
     // print("print de instructor id: ${instructorId}");
     // print("hola mundo");
     try {
-      
       dio.options.headers['Authorization'] = 'Bearer $authToken';
       final response = await dio.get(
           "${Constantes.baseUrl}/fichaCaracterizacion/apiIndex/",
@@ -116,10 +115,9 @@ Future<List<FichaCaracterizacion>> getFichasCaracterizacion(
         final fichasCaracterizacion = (response.data as List)
             .map((e) => FichaCaracterizacion.fromJson(e))
             .toList();
-            // print(fichasCaracterizacion);
+        // print(fichasCaracterizacion);
         return fichasCaracterizacion;
-      }else{  
-        
+      } else {
         return [];
       }
       // return [];
@@ -128,36 +126,49 @@ Future<List<FichaCaracterizacion>> getFichasCaracterizacion(
       return [];
     }
   }
+
 // Funcion para cargar los registros de entrada salida
-Future<List<EntradaSalida>> getEntradaSalida(String instructorId, String fichaId) async {
-  try{
-    final response = await dio.get("${Constantes.baseUrl}/entradaSalida/apiIndex",
-    data: {"ficha_id" : fichaId, "instructor_id" : instructorId});
-    if (response.isSuccesfull()){
-      final entradaSalida = (response.data as List).map((e) => EntradaSalida.fromJson(e)).toList();
-      return entradaSalida;
+  Future<List<EntradaSalida>> getEntradaSalida(
+      String instructorId, String fichaId) async {
+    try {
+      final response = await dio.get(
+          "${Constantes.baseUrl}/entradaSalida/apiIndex",
+          data: {"ficha_id": fichaId, "instructor_id": instructorId});
+      if (response.isSuccesfull()) {
+        final entradaSalida = (response.data as List)
+            .map((e) => EntradaSalida.fromJson(e))
+            .toList();
+        return entradaSalida;
+      }
+      print(
+          "error en la respuesta: ${response.statusCode} - ${response.statusMessage}");
+      return [];
+    } catch (e) {
+      print("error en la solicitud: $e");
+      return [];
     }
-    print("error en la respuesta: ${response.statusCode} - ${response.statusMessage}");
-    return [];
-  }catch(e){
-    print("error en la solicitud: $e");
-    return [];
   }
-}
-Future<bool>  apiStoreEntradaSalida(String fichaId, String aprendiz, String instructorId) async {
-  try {
-    final response = await dio.post("${Constantes.baseUrl}/entradaSalida/apiStoreEntradaSalida", 
-    data: {"ficha_caracterizacion_id" : fichaId, "aprendiz" : aprendiz, "instructor_user_id" : instructorId});
-    if (response.isSuccesfull()){
-      return true;
+
+  Future<bool> apiStoreEntradaSalida(
+      String fichaId, String aprendiz, String instructorId) async {
+    try {
+      final response = await dio.post(
+          "${Constantes.baseUrl}/entradaSalida/apiStoreEntradaSalida",
+          data: {
+            "ficha_caracterizacion_id": fichaId,
+            "aprendiz": aprendiz,
+            "instructor_user_id": instructorId
+          });
+      if (response.isSuccesfull()) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
     }
-    return false;
-  }catch(e) {
-    return false;
   }
-}
-Future<bool> apiUpdateEntradaSalida(
-      String aprendiz) async {
+
+  Future<bool> apiUpdateEntradaSalida(String aprendiz) async {
     try {
       final response = await dio.post(
           "${Constantes.baseUrl}/entradaSalida/apiUpdateEntradaSalida",
@@ -173,9 +184,47 @@ Future<bool> apiUpdateEntradaSalida(
     }
   }
 
-
-
+  Future<List<LoginResponse>> UpdatePerfil(
+      String personaID,
+      String tipoDocumento,
+      String numeroDocumento,
+      String primerNombre,
+      String? segundoNombre,
+      String primerApellido,
+      String? segundoApellido,
+      String fechaDeNacimiento,
+      String genero,
+      String email,
+      String authToken) async {
+    try {
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
+      final response =
+          await dio.get("${Constantes.baseUrl}/instructor/apiUpdate", data: {
+        "persona_id": personaID,
+        "tipo_documento": tipoDocumento,
+        "numero_documento": numeroDocumento,
+        "primer_nombre": primerNombre,
+        "segundo_nombre": segundoNombre,
+        "primer_apellido": primerApellido,
+        "segundo_apellido": segundoApellido,
+        "fecha_de_nacimiento": fechaDeNacimiento,
+        "genero": genero,
+        "email": email
+      });
+      if (response.isSuccesfull()) {
+        final loginResponse =
+            (response.data as List).map((e) => LoginResponse.fromJson(e)).toList();
+        // print(ambientes);
+        return loginResponse;
+      }
+      return [];
+    } catch (e) {
+      print("error al traer los ambientes: error: ${e}");
+      return [];
+    }
+  }
 }
+
 extension ResponseExt on Response {
   bool isSuccesfull() {
     final status = statusCode ?? 400;
