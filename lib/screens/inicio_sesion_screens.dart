@@ -92,10 +92,8 @@ class InicioSesion extends StatelessWidget {
   void login(String email, String password, BuildContext context) async {
     final dio = Dio();
     try {
-      print("email: ${email} , luego la contraseña: ${password}");
       final response = await dio.post("${Constantes.baseUrl}/authenticate",
           data: {'email': email, 'password': password});
-          print(response);
       if (response.statusCode == 200) {
         final loginResponse = LoginResponse.fromJson(response.data);
 

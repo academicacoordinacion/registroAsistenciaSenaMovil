@@ -1,35 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:registro_asistencia_sena_movil/models/entrada_salida_response.dart';
+import 'package:registro_asistencia_sena_movil/models/genero_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
-import 'package:registro_asistencia_sena_movil/services/app_services.dart';
+import 'package:registro_asistencia_sena_movil/models/tipo_de_documentos_response.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
 
 class EditPerfil extends StatefulWidget {
   const EditPerfil({
     Key? key,
     required this.loginResponse,
+    required this.generoResponse,
+    required this.tipoDocumentoResponse,
   }) : super(key: key);
 
   final LoginResponse loginResponse;
+  final List<GeneroResponse> generoResponse;
+  final List<TipoDocumentoResponse> tipoDocumentoResponse;
 
   @override
   State<EditPerfil> createState() => _EditPerfilState();
 }
 
 class _EditPerfilState extends State<EditPerfil> {
-  late List<EntradaSalida?> registros;
-  final AppServices appServices = AppServices();
-
   late TextEditingController _primerNombreController;
   late TextEditingController _segundoNombreController;
   late TextEditingController _primerApellidoController;
   late TextEditingController _segundoApellidoController;
-  late TextEditingController _tipoDocumentoController;
   late TextEditingController _numeroDocumentoController;
   late TextEditingController _fechaDeNacimientoController;
-  late TextEditingController _generoController;
   late TextEditingController _emailController;
+
+  String? _selectedTipoDocumento;
+  String? _selectedGenero;
 
   @override
   void initState() {
@@ -42,8 +44,6 @@ class _EditPerfilState extends State<EditPerfil> {
         text: widget.loginResponse.persona?.primerApellido ?? "");
     _segundoApellidoController = TextEditingController(
         text: widget.loginResponse.persona?.segundoApellido ?? "");
-    _tipoDocumentoController = TextEditingController(
-        text: widget.loginResponse.persona?.tipoDocumento ?? "");
     _numeroDocumentoController = TextEditingController(
         text: widget.loginResponse.persona?.numeroDocumento ?? "");
     _fechaDeNacimientoController = TextEditingController(
@@ -51,10 +51,11 @@ class _EditPerfilState extends State<EditPerfil> {
             ? DateFormat('yyyy-MM-dd')
                 .format(widget.loginResponse.persona!.fechaDeNacimiento!)
             : "");
-    _generoController =
-        TextEditingController(text: widget.loginResponse.persona?.genero ?? "");
     _emailController =
         TextEditingController(text: widget.loginResponse.persona?.email ?? "");
+    _selectedTipoDocumento =
+        widget.loginResponse.persona?.tipoDocumento?.toString();
+    _selectedGenero = widget.loginResponse.persona?.genero?.toString();
   }
 
   @override
@@ -63,10 +64,8 @@ class _EditPerfilState extends State<EditPerfil> {
     _segundoNombreController.dispose();
     _primerApellidoController.dispose();
     _segundoApellidoController.dispose();
-    _tipoDocumentoController.dispose();
     _numeroDocumentoController.dispose();
     _fechaDeNacimientoController.dispose();
-    _generoController.dispose();
     _emailController.dispose();
     super.dispose();
   }
@@ -143,11 +142,17 @@ class _EditPerfilState extends State<EditPerfil> {
                             _segundoApellidoController,
                           ),
                           const Divider(),
-                          _buildProfileRow(
-                            Icons.assignment_ind,
-                            "Tipo de documento",
-                            _tipoDocumentoController,
-                          ),
+                          // _buildDropdownRow(
+                          //   Icons.assignment_ind,
+                          //   "Tipo de documento",
+                          //   _selectedTipoDocumento,
+                          //   widget.tipoDocumentoResponse,
+                          //   (String? newValue) {
+                          //     setState(() {
+                          //       _selectedTipoDocumento = newValue;
+                          //     });
+                          //   },
+                          // ),
                           const Divider(),
                           _buildProfileRow(
                             Icons.assignment,
@@ -161,10 +166,16 @@ class _EditPerfilState extends State<EditPerfil> {
                             _fechaDeNacimientoController,
                           ),
                           const Divider(),
-                          _buildProfileRow(
+                          _buildDropdownRow(
                             Icons.wc,
-                            "Genero",
-                            _generoController,
+                            "Género",
+                            _selectedGenero,
+                            widget.generoResponse,
+                            (String? newValue) {
+                              setState(() {
+                                _selectedGenero = newValue;
+                              });
+                            },
                           ),
                           const Divider(),
                           _buildProfileRow(
@@ -267,6 +278,45 @@ class _EditPerfilState extends State<EditPerfil> {
               ),
             ),
           ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDropdownRow(
+    IconData icon,
+    String label,
+    String? selectedValue,
+    List<dynamic> items,
+    ValueChanged<String?> onChanged,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: Colors.blueAccent),
+            const SizedBox(width: 10),
+            Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        DropdownButtonFormField<String>(
+          value: _selectedTipoDocumento,
+          onChanged: (String? newValue) {
+            setState(() {
+              _selectedTipoDocumento = newValue;
+            });
+          },
+          items: widget.tipoDocumentoResponse.map((TipoDocumentoResponse item) {
+            return DropdownMenuItem<String>(
+              value: item.id.toString(), // Usar el ID como valor único
+              child: Text(item.name), // Mostrar el nombre del documento
+            );
+          }).toList(),
         ),
       ],
     );

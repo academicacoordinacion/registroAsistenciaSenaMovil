@@ -4,10 +4,12 @@ import 'package:registro_asistencia_sena_movil/models/bloque_response.dart';
 import 'package:registro_asistencia_sena_movil/models/departamento_response.dart';
 import 'package:registro_asistencia_sena_movil/models/entrada_salida_response.dart';
 import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion_response.dart';
+import 'package:registro_asistencia_sena_movil/models/genero_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/models/municipio_response.dart';
 import 'package:registro_asistencia_sena_movil/models/piso_response.dart';
 import 'package:registro_asistencia_sena_movil/models/sede_response.dart';
+import 'package:registro_asistencia_sena_movil/models/tipo_de_documentos_response.dart';
 import 'package:registro_asistencia_sena_movil/utils/constantes.dart';
 
 class AppServices {
@@ -212,14 +214,51 @@ class AppServices {
         "email": email
       });
       if (response.isSuccesfull()) {
-        final loginResponse =
-            (response.data as List).map((e) => LoginResponse.fromJson(e)).toList();
+        final loginResponse = (response.data as List)
+            .map((e) => LoginResponse.fromJson(e))
+            .toList();
         // print(ambientes);
         return loginResponse;
       }
       return [];
     } catch (e) {
-      print("error al traer los ambientes: error: ${e}");
+      print("error al actualizar el perfil: error: ${e}");
+      return [];
+    }
+  }
+
+  Future<List<TipoDocumentoResponse>> apiGetTipoDocumentos(
+      String authToken) async {
+    try {
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
+      final response =
+          await dio.get("${Constantes.baseUrl}/apiGetTipoDocumentos");
+      if (response.isSuccesfull()) {
+        final tipoDocumentoResponse = (response.data as List)
+            .map((e) => TipoDocumentoResponse.fromJson(e))
+            .toList();
+        return tipoDocumentoResponse;
+      }
+      return [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  Future<List<GeneroResponse>> apiGetGeneros(
+      String authToken) async {
+    try {
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
+      final response =
+          await dio.get("${Constantes.baseUrl}/apiGetGeneros");
+      if (response.isSuccesfull()) {
+        final generosResponse = (response.data as List)
+            .map((e) => GeneroResponse.fromJson(e))
+            .toList();
+        return generosResponse;
+      }
+      return [];
+    } catch (e) {
       return [];
     }
   }

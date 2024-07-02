@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:registro_asistencia_sena_movil/models/entrada_salida_response.dart';
+import 'package:registro_asistencia_sena_movil/models/genero_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
+import 'package:registro_asistencia_sena_movil/models/tipo_de_documentos_response.dart';
 import 'package:registro_asistencia_sena_movil/screens/perfil/edit_screens.dart';
 import 'package:registro_asistencia_sena_movil/services/app_services.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
@@ -148,14 +151,7 @@ class _ShowPerfilState extends State<ShowPerfil> {
             children: [
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => EditPerfil(
-                        loginResponse: widget.loginResponse,
-                      ),
-                    ),
-                  );
+                  editPerfil(widget.loginResponse.token);
                 },
                 child: const Icon(Icons.edit),
               ),
@@ -188,4 +184,67 @@ class _ShowPerfilState extends State<ShowPerfil> {
       ],
     );
   }
+
+  void editPerfil(String authToken) async {
+    try {
+      // Fetch generos and tipoDocumentos concurrently
+      final generosResponseFuture = apiGetGeneros(authToken);
+      final tipoDocumentosResponseFuture = apiGetTipoDocumentos(authToken);
+
+      final generosResponse = await generosResponseFuture;
+      final tipoDocumentosResponse = await tipoDocumentosResponseFuture;
+
+      // verificar que no vengan nulos los parametros
+      if (generosResponse != null && tipoDocumentosResponse != null) {
+        print(generosResponse);
+        print(tipoDocumentosResponse);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EditPerfil(
+              loginResponse: widget.loginResponse,
+              generoResponse: generosResponse,
+              tipoDocumentoResponse: tipoDocumentosResponse,
+            ),
+          ),
+        );
+      } else {
+        // Handle the case where one or both responses are null
+        Fluttertoast.showToast(
+          msg: "Error fetching data.",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+        );
+      }
+    } catch (e) {
+      // Handle the error
+      Fluttertoast.showToast(
+        msg: "Error: ${e.toString()}",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+      );
+    }
+  }
+
+  Future<List<GeneroResponse>?> apiGetGeneros(String authToken) async {
+    try {
+      final data = await appServices.apiGetGeneros(authToken);
+      return data.isNotEmpty ? data : null;
+    } catch (e) {
+      print("Error fetching generos: $e");
+      return null;
+    }
+  }
+
+  Future<List<TipoDocumentoResponse>?> apiGetTipoDocumentos(
+      String authToken) async {
+    try {
+      final data = await appServices.apiGetTipoDocumentos(authToken);
+      return data.isNotEmpty ? data : null;
+    } catch (e) {
+      print("Error fetching tipoDocumentos: $e");
+      return null;
+    }
+  }
+
 }
