@@ -187,10 +187,12 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
           widget.ficha.id.toString(),
           result,
           widget.loginResponse.user.id.toString(),
+          widget.loginResponse.token
         );
       } else if (eventoSeleccionado == 'salida') {
         success = await apiUpdateEntradaSalida(
           result,
+          widget.loginResponse.token
         );
       }
 
@@ -230,17 +232,17 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
   }
 
   Future<bool> apiStoreEntradaSalida(
-      String fichaId, String aprendiz, String instructorId) async {
+      String fichaId, String aprendiz, String instructorId, String authToken) async {
     final data = await appServices.apiStoreEntradaSalida(
-        fichaId, aprendiz, instructorId);
+        fichaId, aprendiz, instructorId, authToken);
     if (data) {
       return true;
     }
     return false;
   }
 
-  Future<bool> apiUpdateEntradaSalida(String aprendiz) async {
-    final data = await appServices.apiUpdateEntradaSalida(aprendiz);
+  Future<bool> apiUpdateEntradaSalida(String aprendiz, String authToken) async {
+    final data = await appServices.apiUpdateEntradaSalida(aprendiz, authToken);
     if (data) {
       return true;
     }

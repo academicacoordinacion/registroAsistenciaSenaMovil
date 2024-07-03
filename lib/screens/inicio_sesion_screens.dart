@@ -92,7 +92,7 @@ class InicioSesion extends StatelessWidget {
   void login(String email, String password, BuildContext context) async {
     final dio = Dio();
     try {
-      final response = await dio.post("${Constantes.baseUrl}/authenticate/",
+      final response = await dio.post("${Constantes.baseUrl}/authenticate",
           data: {'email': email, 'password': password});
       if (response.statusCode == 200) {
         final loginResponse = LoginResponse.fromJson(response.data);
@@ -101,7 +101,7 @@ class InicioSesion extends StatelessWidget {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         String loginResponseJson = jsonEncode(loginResponse.toJson());
         await prefs.setString('loginResponse', loginResponseJson);
-
+        
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -114,8 +114,10 @@ class InicioSesion extends StatelessWidget {
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.TOP,
         );
+
       }
     } catch (e) {
+      print(e);
       Fluttertoast.showToast(
         msg: "Credenciales incorrectas",
         toastLength: Toast.LENGTH_LONG,

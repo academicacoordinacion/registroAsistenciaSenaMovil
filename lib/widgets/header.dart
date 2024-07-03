@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/screens/dashboard_screens.dart';
 import 'package:registro_asistencia_sena_movil/screens/inicio_sesion_screens.dart';
+import 'package:registro_asistencia_sena_movil/screens/perfil/show_screens.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -34,12 +35,12 @@ class Header extends StatelessWidget {
         PopupMenuButton<String>(
           onSelected: (String value) {
             if (value == 'perfil') {
-              // Realizar la navegación a la página de perfil u otra acción deseada
-              Fluttertoast.showToast(
-                msg: "Aún en desarróllo...",
-                toastLength: Toast.LENGTH_LONG,
-                gravity: ToastGravity.TOP,
+               Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => ShowPerfil(loginResponse: loginResponse)),
+                (Route<dynamic> route) => false,
               );
+
             } else if (value == 'logout') {
               logout(context);
             }
@@ -65,11 +66,20 @@ class Header extends StatelessWidget {
     );
   }
 }
-
 Future<void> logout(BuildContext context) async {
   final dio = Dio();
   SharedPreferences prefs = await SharedPreferences.getInstance();
+
+  // Comprobación previa del loginResponse
+  String? loginResponse = prefs.getString('loginResponse');
+  print("Antes de eliminar: loginResponse = $loginResponse");
+
   await prefs.remove('loginResponse');
+
+  // Comprobación posterior del loginResponse
+  loginResponse = prefs.getString('loginResponse');
+  print("Después de eliminar: loginResponse = $loginResponse");
+
   try {
     final response = await dio.post("${Constantes.baseUrl}/logout");
     if (response.statusCode == 200) {
@@ -83,8 +93,11 @@ Future<void> logout(BuildContext context) async {
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.TOP,
       );
+    } else {
+      print("Error al cerrar sesión: Código de estado ${response.statusCode}");
     }
   } catch (e) {
     // Manejo de errores
+    print("No es posible cerrar sesión. Error: $e");
   }
 }

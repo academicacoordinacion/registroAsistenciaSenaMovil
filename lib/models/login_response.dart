@@ -2,7 +2,6 @@
 //
 //     final loginResponse = loginResponseFromJson(jsonString);
 
-// import 'package:meta/meta.dart';
 import 'dart:convert';
 
 LoginResponse loginResponseFromJson(String str) =>
@@ -39,10 +38,10 @@ class Persona {
   final String tipoDocumento;
   final String numeroDocumento;
   final String primerNombre;
-  final String segundoNombre;
-  final String primerApellido;
-  final String segundoApellido;
-  final DateTime fechaDeNacimiento;
+  final String? segundoNombre;
+  final String? primerApellido;
+  final String? segundoApellido;
+  final DateTime? fechaDeNacimiento;
   final String genero;
   final String email;
   final DateTime createdAt;
@@ -55,10 +54,10 @@ class Persona {
     required this.tipoDocumento,
     required this.numeroDocumento,
     required this.primerNombre,
-    required this.segundoNombre,
-    required this.primerApellido,
-    required this.segundoApellido,
-    required this.fechaDeNacimiento,
+    this.segundoNombre,
+    this.primerApellido,
+    this.segundoApellido,
+    this.fechaDeNacimiento,
     required this.genero,
     required this.email,
     required this.createdAt,
@@ -72,10 +71,12 @@ class Persona {
         tipoDocumento: json["tipo_documento"],
         numeroDocumento: json["numero_documento"],
         primerNombre: json["primer_nombre"],
-        segundoNombre: json["segundo_nombre"],
-        primerApellido: json["primer_apellido"],
-        segundoApellido: json["segundo_apellido"],
-        fechaDeNacimiento: DateTime.parse(json["fecha_de_nacimiento"]),
+        segundoNombre: json["segundo_nombre"] ?? "",
+        primerApellido: json["primer_apellido"] ?? "",
+        segundoApellido: json["segundo_apellido"] ?? "",
+        fechaDeNacimiento: json["fecha_de_nacimiento"] != null
+            ? DateTime.parse(json["fecha_de_nacimiento"])
+            : null,
         genero: json["genero"],
         email: json["email"],
         createdAt: DateTime.parse(json["created_at"]),
@@ -92,8 +93,9 @@ class Persona {
         "segundo_nombre": segundoNombre,
         "primer_apellido": primerApellido,
         "segundo_apellido": segundoApellido,
-        "fecha_de_nacimiento":
-            "${fechaDeNacimiento.year.toString().padLeft(4, '0')}-${fechaDeNacimiento.month.toString().padLeft(2, '0')}-${fechaDeNacimiento.day.toString().padLeft(2, '0')}",
+        "fecha_de_nacimiento": fechaDeNacimiento != null
+            ? "${fechaDeNacimiento?.year.toString().padLeft(4, '0')}-${fechaDeNacimiento?.month.toString().padLeft(2, '0')}-${fechaDeNacimiento?.day.toString().padLeft(2, '0')}"
+            : null,
         "genero": genero,
         "email": email,
         "created_at": createdAt.toIso8601String(),
@@ -115,7 +117,7 @@ class User {
   User({
     required this.id,
     required this.email,
-    required this.emailVerifiedAt,
+    this.emailVerifiedAt,
     required this.status,
     required this.createdAt,
     required this.updatedAt,
