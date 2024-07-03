@@ -78,7 +78,7 @@ class _ShowPerfilState extends State<ShowPerfil> {
                           _buildProfileRow(
                             Icons.person,
                             "Primer Nombre",
-                            widget.loginResponse.persona?.primerNombre ?? "",
+                            widget.loginResponse.persona.primerNombre,
                           ),
                           const Divider(),
                           _buildProfileRow(

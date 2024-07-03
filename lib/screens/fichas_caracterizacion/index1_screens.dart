@@ -62,7 +62,7 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
       onPressed: () {
         if (selectedFicha != null && selectedAmbiente != null) {
           screenIndexEntradaSalida(
-              selectedFicha!, widget.loginResponse, selectedAmbiente!, context);
+              selectedFicha!, widget.loginResponse, selectedAmbiente!, widget.loginResponse.token, context);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -204,9 +204,10 @@ class _IndexFichaCaracterizacionState extends State<IndexFichaCaracterizacion> {
       FichaCaracterizacion ficha,
       LoginResponse loginResponse,
       Ambiente selectedAmbiente,
+      String authToken,
       BuildContext context) async {
     final data = await appServices.getEntradaSalida(
-        loginResponse.user.id.toString(), ficha.id.toString());
+        loginResponse.user.id.toString(), ficha.id.toString(), authToken);
     final registros = data;
     Navigator.push(
         context,

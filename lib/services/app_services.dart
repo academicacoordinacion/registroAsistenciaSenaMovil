@@ -131,8 +131,9 @@ class AppServices {
 
 // Funcion para cargar los registros de entrada salida
   Future<List<EntradaSalida>> getEntradaSalida(
-      String instructorId, String fichaId) async {
+      String instructorId, String fichaId, String authToken) async {
     try {
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
       final response = await dio.get(
           "${Constantes.baseUrl}/entradaSalida/apiIndex",
           data: {"ficha_id": fichaId, "instructor_id": instructorId});
@@ -152,7 +153,8 @@ class AppServices {
   }
 
   Future<bool> apiStoreEntradaSalida(
-      String fichaId, String aprendiz, String instructorId, String authToken) async {
+      String fichaId, String aprendiz, String instructorId, String ambienteId, String authToken) async {
+        print("hola mundo. ${ambienteId}");
     try {
       dio.options.headers['Authorization'] = 'Bearer $authToken';
       final response = await dio.post(
@@ -160,7 +162,8 @@ class AppServices {
           data: {
             "ficha_caracterizacion_id": fichaId,
             "aprendiz": aprendiz,
-            "instructor_user_id": instructorId
+            "instructor_user_id": instructorId,
+            "ambiente_id" : ambienteId,
           });
       if (response.isSuccesfull()) {
         return true;
