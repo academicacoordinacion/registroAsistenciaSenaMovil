@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:registro_asistencia_sena_movil/models/entrada_salida_response.dart';
 import 'package:registro_asistencia_sena_movil/models/genero_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/models/tipo_de_documentos_response.dart';
+import 'package:registro_asistencia_sena_movil/screens/perfil/show_screens.dart';
+import 'package:registro_asistencia_sena_movil/services/app_services.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditPerfil extends StatefulWidget {
   const EditPerfil({
@@ -22,6 +26,9 @@ class EditPerfil extends StatefulWidget {
 }
 
 class _EditPerfilState extends State<EditPerfil> {
+  late List<EntradaSalida?> registros;
+  final AppServices appServices = AppServices();
+
   late TextEditingController _primerNombreController;
   late TextEditingController _segundoNombreController;
   late TextEditingController _primerApellidoController;
@@ -53,9 +60,21 @@ class _EditPerfilState extends State<EditPerfil> {
             : "");
     _emailController =
         TextEditingController(text: widget.loginResponse.persona?.email ?? "");
-    _selectedTipoDocumento =
-        widget.loginResponse.persona?.tipoDocumento?.toString();
-    _selectedGenero = widget.loginResponse.persona?.genero?.toString();
+
+    // Inicialización de los selectores
+    _selectedTipoDocumento = widget.tipoDocumentoResponse
+        .firstWhere(
+            (tipo) => tipo.name == widget.loginResponse.persona?.tipoDocumento,
+            orElse: () => widget.tipoDocumentoResponse.first)
+        .id
+        .toString();
+
+    _selectedGenero = widget.generoResponse
+        .firstWhere(
+            (genero) => genero.name == widget.loginResponse.persona?.genero,
+            orElse: () => widget.generoResponse.first)
+        .id
+        .toString();
   }
 
   @override
@@ -142,17 +161,17 @@ class _EditPerfilState extends State<EditPerfil> {
                             _segundoApellidoController,
                           ),
                           const Divider(),
-                          // _buildDropdownRow(
-                          //   Icons.assignment_ind,
-                          //   "Tipo de documento",
-                          //   _selectedTipoDocumento,
-                          //   widget.tipoDocumentoResponse,
-                          //   (String? newValue) {
-                          //     setState(() {
-                          //       _selectedTipoDocumento = newValue;
-                          //     });
-                          //   },
-                          // ),
+                          _buildDropdownRow(
+                            Icons.assignment_ind,
+                            "Tipo de documento",
+                            _selectedTipoDocumento,
+                            widget.tipoDocumentoResponse,
+                            (String? newValue) {
+                              setState(() {
+                                _selectedTipoDocumento = newValue;
+                              });
+                            },
+                          ),
                           const Divider(),
                           _buildProfileRow(
                             Icons.assignment,
@@ -168,7 +187,7 @@ class _EditPerfilState extends State<EditPerfil> {
                           const Divider(),
                           _buildDropdownRow(
                             Icons.wc,
-                            "Género",
+                            "Genero",
                             _selectedGenero,
                             widget.generoResponse,
                             (String? newValue) {
@@ -203,6 +222,8 @@ class _EditPerfilState extends State<EditPerfil> {
               ElevatedButton(
                 onPressed: () {
                   // guardar cambios
+                  // debug(_selectedGenero.toString(), _selectedTipoDocumento.toString());
+                  updatePerfil(widget.loginResponse.persona.id.toString(), _selectedTipoDocumento.toString(), _numeroDocumentoController.toString(), _primerNombreController.toString(), _segundoNombreController.toString(), _primerApellidoController.toString(), _segundoApellidoController.toString(), _fechaDeNacimientoController.toString(), _selectedGenero.toString(), _emailController.toString(), widget.loginResponse.token);
                 },
                 child: const Icon(Icons.save),
               ),
@@ -304,21 +325,97 @@ class _EditPerfilState extends State<EditPerfil> {
           ],
         ),
         const SizedBox(height: 5),
-        DropdownButtonFormField<String>(
-          value: _selectedTipoDocumento,
-          onChanged: (String? newValue) {
-            setState(() {
-              _selectedTipoDocumento = newValue;
-            });
-          },
-          items: widget.tipoDocumentoResponse.map((TipoDocumentoResponse item) {
+        DropdownButton<String>(
+          value: selectedValue,
+          onChanged: onChanged,
+          items: items.map<DropdownMenuItem<String>>((dynamic item) {
             return DropdownMenuItem<String>(
-              value: item.id.toString(), // Usar el ID como valor único
-              child: Text(item.name), // Mostrar el nombre del documento
+              value: item.id.toString(),
+              child: Text(item.name),
             );
           }).toList(),
         ),
       ],
     );
+  }
+
+  void updatePerfil(
+      String personaID,
+      String tipoDocumento,
+      String numeroDocumento,
+      String primerNombre,
+      String? segundoNombre,
+      String primerApellido,
+      String? segundoApellido,
+      String fechaDeNacimiento,
+      String genero,
+      String email,
+      String authToken) async {
+    try {
+      final loginResponse = await apiUpdatePerfil(
+          personaID,
+          tipoDocumento,
+          numeroDocumento,
+          primerNombre,
+          segundoNombre,
+          primerApellido,
+          segundoApellido,
+          fechaDeNacimiento,
+          genero,
+          email,
+          authToken);
+      if (loginResponse.isNotEmpty) {
+        // Obtener la instancia de SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+
+        // Eliminar la preferencia existente (si es necesario)
+        await prefs.remove('loginResponse');
+
+        // Guardar la nueva respuesta en SharedPreferences
+        await prefs.setString('loginResponse', loginResponse.toString());
+         Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ShowPerfil(
+              loginResponse: widget.loginResponse,
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      print("error de actualizacion: ${e}");
+    }
+  }
+
+  Future<List<LoginResponse>> apiUpdatePerfil(
+      String personaID,
+      String tipoDocumento,
+      String numeroDocumento,
+      String primerNombre,
+      String? segundoNombre,
+      String primerApellido,
+      String? segundoApellido,
+      String fechaDeNacimiento,
+      String genero,
+      String email,
+      String authToken) async {
+    try {
+      final data = await appServices.updatePerfil(
+          personaID,
+          tipoDocumento,
+          numeroDocumento,
+          primerNombre,
+          segundoNombre,
+          primerApellido,
+          segundoApellido,
+          fechaDeNacimiento,
+          genero,
+          email,
+          authToken);
+      return data;
+    } catch (e) {
+      print("la otra parada ${e}");
+      return [];
+    }
   }
 }

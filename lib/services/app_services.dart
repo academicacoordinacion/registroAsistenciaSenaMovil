@@ -152,8 +152,9 @@ class AppServices {
   }
 
   Future<bool> apiStoreEntradaSalida(
-      String fichaId, String aprendiz, String instructorId) async {
+      String fichaId, String aprendiz, String instructorId, String authToken) async {
     try {
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
       final response = await dio.post(
           "${Constantes.baseUrl}/entradaSalida/apiStoreEntradaSalida",
           data: {
@@ -170,8 +171,9 @@ class AppServices {
     }
   }
 
-  Future<bool> apiUpdateEntradaSalida(String aprendiz) async {
+  Future<bool> apiUpdateEntradaSalida(String aprendiz,String authToken ) async {
     try {
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
       final response = await dio.post(
           "${Constantes.baseUrl}/entradaSalida/apiUpdateEntradaSalida",
           data: {
@@ -186,7 +188,7 @@ class AppServices {
     }
   }
 
-  Future<List<LoginResponse>> UpdatePerfil(
+  Future<List<LoginResponse>> updatePerfil(
       String personaID,
       String tipoDocumento,
       String numeroDocumento,
@@ -201,7 +203,7 @@ class AppServices {
     try {
       dio.options.headers['Authorization'] = 'Bearer $authToken';
       final response =
-          await dio.get("${Constantes.baseUrl}/instructor/apiUpdate", data: {
+          await dio.post("${Constantes.baseUrl}/instructor/apiUpdate", data: {
         "persona_id": personaID,
         "tipo_documento": tipoDocumento,
         "numero_documento": numeroDocumento,
