@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:registro_asistencia_sena_movil/models/entrada_salida_response.dart';
@@ -223,7 +225,26 @@ class _EditPerfilState extends State<EditPerfil> {
                 onPressed: () {
                   // guardar cambios
                   // debug(_selectedGenero.toString(), _selectedTipoDocumento.toString());
-                  updatePerfil(widget.loginResponse.persona.id.toString(), _selectedTipoDocumento.toString(), _numeroDocumentoController.toString(), _primerNombreController.toString(), _segundoNombreController.toString(), _primerApellidoController.toString(), _segundoApellidoController.toString(), _fechaDeNacimientoController.toString(), _selectedGenero.toString(), _emailController.toString(), widget.loginResponse.token);
+                  updatePerfil(
+                    widget.loginResponse.persona.id.toString(),
+                    _selectedTipoDocumento.toString(),
+                    _numeroDocumentoController
+                        .text, // Cambiar a text en lugar de toString
+                    _primerNombreController
+                        .text, // Cambiar a text en lugar de toString
+                    _segundoNombreController
+                        .text, // Cambiar a text en lugar de toString
+                    _primerApellidoController
+                        .text, // Cambiar a text en lugar de toString
+                    _segundoApellidoController
+                        .text, // Cambiar a text en lugar de toString
+                    _fechaDeNacimientoController
+                        .text, // Cambiar a text en lugar de toString
+                    _selectedGenero.toString(),
+                    _emailController
+                        .text, // Cambiar a text en lugar de toString
+                    widget.loginResponse.token,
+                  );
                 },
                 child: const Icon(Icons.save),
               ),
@@ -364,20 +385,21 @@ class _EditPerfilState extends State<EditPerfil> {
           genero,
           email,
           authToken);
-      if (loginResponse.isNotEmpty) {
+      if (loginResponse != null) {
         // Obtener la instancia de SharedPreferences
         final prefs = await SharedPreferences.getInstance();
-
+          debugPrint(prefs.toString());
         // Eliminar la preferencia existente (si es necesario)
         await prefs.remove('loginResponse');
-
+        
         // Guardar la nueva respuesta en SharedPreferences
-        await prefs.setString('loginResponse', loginResponse.toString());
-         Navigator.push(
+        String loginResponseJson = jsonEncode(loginResponse.toJson());
+        await prefs.setString('loginResponse', loginResponseJson);
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => ShowPerfil(
-              loginResponse: widget.loginResponse,
+              loginResponse: loginResponse,
             ),
           ),
         );
@@ -387,7 +409,7 @@ class _EditPerfilState extends State<EditPerfil> {
     }
   }
 
-  Future<List<LoginResponse>> apiUpdatePerfil(
+  Future<LoginResponse?> apiUpdatePerfil(
       String personaID,
       String tipoDocumento,
       String numeroDocumento,
@@ -415,7 +437,7 @@ class _EditPerfilState extends State<EditPerfil> {
       return data;
     } catch (e) {
       print("la otra parada ${e}");
-      return [];
+      // return [];
     }
   }
 }

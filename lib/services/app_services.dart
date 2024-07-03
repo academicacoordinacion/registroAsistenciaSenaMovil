@@ -188,7 +188,7 @@ class AppServices {
     }
   }
 
-  Future<List<LoginResponse>> updatePerfil(
+  Future<LoginResponse?> updatePerfil(
       String personaID,
       String tipoDocumento,
       String numeroDocumento,
@@ -200,6 +200,7 @@ class AppServices {
       String genero,
       String email,
       String authToken) async {
+        print("la fecha de nacimiento es: ${fechaDeNacimiento}");
     try {
       dio.options.headers['Authorization'] = 'Bearer $authToken';
       final response =
@@ -215,17 +216,15 @@ class AppServices {
         "genero": genero,
         "email": email
       });
+         
       if (response.isSuccesfull()) {
-        final loginResponse = (response.data as List)
-            .map((e) => LoginResponse.fromJson(e))
-            .toList();
-        // print(ambientes);
+        final loginResponse = LoginResponse.fromJson(response.data);
         return loginResponse;
       }
-      return [];
+      // return [];
     } catch (e) {
-      print("error al actualizar el perfil: error: ${e}");
-      return [];
+      print("error al actualizar el perfil: estes es el errorcito: ${e}");
+      // return [];
     }
   }
 

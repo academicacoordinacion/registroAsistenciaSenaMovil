@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:registro_asistencia_sena_movil/models/entrada_salida_response.dart';
 import 'package:registro_asistencia_sena_movil/models/genero_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/models/tipo_de_documentos_response.dart';
@@ -21,7 +20,6 @@ class ShowPerfil extends StatefulWidget {
 }
 
 class _ShowPerfilState extends State<ShowPerfil> {
-  late List<EntradaSalida?> registros;
   final AppServices appServices = AppServices();
 
   @override
