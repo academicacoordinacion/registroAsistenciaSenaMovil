@@ -266,6 +266,28 @@ class AppServices {
       return [];
     }
   }
+  Future<bool> apiListarEntradaSalida(
+      String instructorId,
+      String fichaCaracterizacionId,
+      String ambienteId,
+      String authToken) async {
+     try {
+      dio.options.headers['Authorization'] = 'Bearer $authToken';
+      final response =
+          await dio.post("${Constantes.baseUrl}/entradaSalida/apiListarEntradaSalida",
+          data: {
+          "instructor_user_id" : instructorId,
+          "ficha_caracterizacion_id" : fichaCaracterizacionId,
+          "ambiente_id" : ambienteId
+      });
+      if (response.isSuccesfull()) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
 }
 
 extension ResponseExt on Response {

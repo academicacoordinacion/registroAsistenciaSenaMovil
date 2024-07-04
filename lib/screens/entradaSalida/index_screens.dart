@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:registro_asistencia_sena_movil/controllers/entrada_salida_controller.dart';
 // import 'package:intl/date_symbol_data_local.dart';
 // import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:registro_asistencia_sena_movil/models/ambiente_response.dart';
@@ -33,6 +34,8 @@ class IndexEntradaSalida extends StatefulWidget {
 class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
   late List<EntradaSalida?> registros;
   final AppServices appServices = AppServices();
+  final EntradaSalidaController entradaSalidaController =
+      EntradaSalidaController();
   String? eventoSeleccionado;
 
   @override
@@ -41,7 +44,8 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
     registros = widget.registros;
     eventoSeleccionado = 'entrada';
   }
-@override
+
+  @override
   Widget build(BuildContext context) {
     FichaCaracterizacion ficha = widget.ficha;
     DateTime fecha = DateTime.now();
@@ -121,27 +125,22 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
                 onPressed: scanQRCode,
                 child: const Icon(Icons.qr_code),
               ),
-         ElevatedButton(
+              ElevatedButton(
                 onPressed: () {
-                  // Acción del botón de enviar asistencia
-                  Fluttertoast.showToast(
-                    msg: "Aún en desarróllo...",
-                    toastLength: Toast.LENGTH_LONG,
-                    gravity: ToastGravity.TOP,
-                  );
+                  BotonListarEntradaSalida(
+                      widget.loginResponse.persona.instructorId.toString(),
+                      widget.ficha.id.toString(),
+                      widget.ambiente.id.toString(),
+                      widget.loginResponse.token);
                 },
                 child: const Icon(Icons.checklist),
               ),
-
-
-
             ],
           ),
         ),
       ),
     );
   }
-
 
   Widget getListadoRegistros() {
     return Card(
@@ -183,22 +182,20 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
       bool success = false;
 
       if (eventoSeleccionado == 'entrada') {
-        success = await apiStoreEntradaSalida(
-          widget.ficha.id.toString(),
-          result,
-          widget.loginResponse.user.id.toString(),
-          widget.ambiente.id.toString(),
-          widget.loginResponse.token
-        );
+        success = await entradaSalidaController.apiStoreEntradaSalida(
+            widget.ficha.id.toString(),
+            result,
+            widget.loginResponse.persona.instructorId.toString(),
+            widget.ambiente.id.toString(),
+            widget.loginResponse.token);
       } else if (eventoSeleccionado == 'salida') {
-        success = await apiUpdateEntradaSalida(
-          result,
-          widget.loginResponse.token
-        );
+        success = await entradaSalidaController.apiUpdateEntradaSalida(
+            result, widget.loginResponse.token);
       }
 
       if (success) {
-        await apiIndex(widget.ficha, widget.loginResponse);
+        await apiIndex(widget.loginResponse.persona.instructorId.toString(),
+            widget.ficha.id.toString(), widget.loginResponse.token);
       } else {
         showDialog(
           context: context,
@@ -217,36 +214,34 @@ class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
     }
   }
 
+  Future<void> BotonListarEntradaSalida(
+      String instructorId,
+      String fichaCaracterizacionId,
+      String ambienteId,
+      String authToken) async {
+    final response = await entradaSalidaController.listarEntradaSalida(
+        instructorId, fichaCaracterizacionId, ambienteId, authToken);
+    if (response != false) {
+      await apiIndex(instructorId, fichaCaracterizacionId, authToken);
+      Fluttertoast.showToast(
+        msg: "Asistencia Lista!",
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.TOP,
+      );
+    }
+  }
+
   Future<void> apiIndex(
-    FichaCaracterizacion ficha,
-    LoginResponse loginResponse,
+    String instructorId,
+    String fichaCaracterizacionId,
+    String authToken,
   ) async {
-    final data = await appServices.getEntradaSalida(
-      loginResponse.user.id.toString(),
-      ficha.id.toString(), loginResponse.token
-    );
+    final data = await entradaSalidaController.apiIndex(
+        instructorId, fichaCaracterizacionId, authToken);
     if (data.isNotEmpty) {
       setState(() {
         registros = data;
       });
     }
-  }
-
-  Future<bool> apiStoreEntradaSalida(
-      String fichaId, String aprendiz, String instructorId, String ambienteId, String authToken) async {
-    final data = await appServices.apiStoreEntradaSalida(
-        fichaId, aprendiz, instructorId, ambienteId, authToken);
-    if (data) {
-      return true;
-    }
-    return false;
-  }
-
-  Future<bool> apiUpdateEntradaSalida(String aprendiz, String authToken) async {
-    final data = await appServices.apiUpdateEntradaSalida(aprendiz, authToken);
-    if (data) {
-      return true;
-    }
-    return false;
   }
 }
