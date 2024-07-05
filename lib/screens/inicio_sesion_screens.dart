@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:registro_asistencia_sena_movil/controllers/login_controller.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/screens/dashboard_screens.dart';
 import 'package:registro_asistencia_sena_movil/utils/constantes.dart';
@@ -12,6 +13,7 @@ class InicioSesion extends StatelessWidget {
 
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
+  final LoginController loginController = LoginController();
 
   @override
   Widget build(BuildContext context) {
@@ -90,18 +92,14 @@ class InicioSesion extends StatelessWidget {
   }
 
   void login(String email, String password, BuildContext context) async {
-    final dio = Dio();
     try {
-      final response = await dio.post("${Constantes.baseUrl}/authenticate",
-          data: {'email': email, 'password': password});
-      if (response.statusCode == 200) {
-        final loginResponse = LoginResponse.fromJson(response.data);
+      final loginResponse = await loginController.login(email, password);
 
-        // Guardar LoginResponse en SharedPreferences
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        String loginResponseJson = jsonEncode(loginResponse.toJson());
-        await prefs.setString('loginResponse', loginResponseJson);
-        
+      // Guardar LoginResponse en SharedPreferences
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String loginResponseJson = jsonEncode(loginResponse?.toJson());
+      await prefs.setString('loginResponse', loginResponseJson);
+      if (loginResponse != null) {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -114,12 +112,17 @@ class InicioSesion extends StatelessWidget {
           toastLength: Toast.LENGTH_LONG,
           gravity: ToastGravity.TOP,
         );
-
+      } else {
+        Fluttertoast.showToast(
+          msg: "Credenciales incorrectas.",
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+        );
       }
     } catch (e) {
       print(e);
       Fluttertoast.showToast(
-        msg: "Credenciales incorrectas",
+        msg: "Ocurrio un error inesperado.",
         toastLength: Toast.LENGTH_LONG,
         gravity: ToastGravity.TOP,
       );
