@@ -35,12 +35,13 @@ class Header extends StatelessWidget {
         PopupMenuButton<String>(
           onSelected: (String value) {
             if (value == 'perfil') {
-               Navigator.pushAndRemoveUntil(
+              Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => ShowPerfil(loginResponse: loginResponse)),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ShowPerfil(loginResponse: loginResponse)),
                 (Route<dynamic> route) => false,
               );
-
             } else if (value == 'logout') {
               logout(context);
             }
@@ -66,6 +67,7 @@ class Header extends StatelessWidget {
     );
   }
 }
+
 Future<void> logout(BuildContext context) async {
   final dio = Dio();
   SharedPreferences prefs = await SharedPreferences.getInstance();
