@@ -2,12 +2,8 @@
 //
 //     final entradaSalida = entradaSalidaFromJson(jsonString);
 
-// import 'package:meta/meta.dart';
+import 'package:meta/meta.dart';
 import 'dart:convert';
-
-// import 'package:flutter/src/material/dropdown.dart';
-
-// import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion_response.dart';
 
 List<EntradaSalida> entradaSalidaFromJson(String str) =>
     List<EntradaSalida>.from(
@@ -22,11 +18,12 @@ class EntradaSalida {
   final int instructorUserId;
   final String aprendiz;
   final String entrada;
-  final String? salida;
+  final dynamic salida;
   final DateTime createdAt;
-  final DateTime updatedAt;
+  final dynamic updatedAt;
   final int fichaCaracterizacionId;
   final dynamic listado;
+  final int ambienteId;
 
   EntradaSalida({
     required this.id,
@@ -34,11 +31,12 @@ class EntradaSalida {
     required this.instructorUserId,
     required this.aprendiz,
     required this.entrada,
-    this.salida,
+    required this.salida,
     required this.createdAt,
     required this.updatedAt,
     required this.fichaCaracterizacionId,
     required this.listado,
+    required this.ambienteId,
   });
 
   factory EntradaSalida.fromJson(Map<String, dynamic> json) => EntradaSalida(
@@ -47,11 +45,12 @@ class EntradaSalida {
         instructorUserId: json["instructor_user_id"],
         aprendiz: json["aprendiz"],
         entrada: json["entrada"],
-        salida: json['salida'] != null ? json['salida'] as String : null,
+        salida: json["salida"],
         createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
+        updatedAt: json["updated_at"],
         fichaCaracterizacionId: json["ficha_caracterizacion_id"],
         listado: json["listado"],
+        ambienteId: json["ambiente_id"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -63,10 +62,9 @@ class EntradaSalida {
         "entrada": entrada,
         "salida": salida,
         "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
+        "updated_at": updatedAt,
         "ficha_caracterizacion_id": fichaCaracterizacionId,
         "listado": listado,
+        "ambiente_id": ambienteId,
       };
-
-  // map(DropdownMenuItem<Ficha> Function(Ficha ficha) param0) {}
 }

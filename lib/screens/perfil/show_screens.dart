@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:registro_asistencia_sena_movil/controllers/parametro_controller.dart';
 import 'package:registro_asistencia_sena_movil/models/genero_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/models/tipo_de_documentos_response.dart';
@@ -21,6 +22,7 @@ class ShowPerfil extends StatefulWidget {
 
 class _ShowPerfilState extends State<ShowPerfil> {
   final AppServices appServices = AppServices();
+  final ParametroController parametroController = ParametroController();
 
   @override
   void initState() {
@@ -78,7 +80,7 @@ class _ShowPerfilState extends State<ShowPerfil> {
                           _buildProfileRow(
                             Icons.person,
                             "Primer Nombre",
-                            widget.loginResponse.persona?.primerNombre ?? "",
+                            widget.loginResponse.persona.primerNombre,
                           ),
                           const Divider(),
                           _buildProfileRow(
@@ -186,8 +188,8 @@ class _ShowPerfilState extends State<ShowPerfil> {
   void editPerfil(String authToken) async {
     try {
       // Fetch generos and tipoDocumentos concurrently
-      final generosResponseFuture = apiGetGeneros(authToken);
-      final tipoDocumentosResponseFuture = apiGetTipoDocumentos(authToken);
+      final generosResponseFuture = parametroController.apiGetGeneros(authToken);
+      final tipoDocumentosResponseFuture = parametroController.apiGetTipoDocumentos(authToken);
 
       final generosResponse = await generosResponseFuture;
       final tipoDocumentosResponse = await tipoDocumentosResponseFuture;
@@ -224,25 +226,6 @@ class _ShowPerfilState extends State<ShowPerfil> {
     }
   }
 
-  Future<List<GeneroResponse>?> apiGetGeneros(String authToken) async {
-    try {
-      final data = await appServices.apiGetGeneros(authToken);
-      return data.isNotEmpty ? data : null;
-    } catch (e) {
-      print("Error fetching generos: $e");
-      return null;
-    }
-  }
-
-  Future<List<TipoDocumentoResponse>?> apiGetTipoDocumentos(
-      String authToken) async {
-    try {
-      final data = await appServices.apiGetTipoDocumentos(authToken);
-      return data.isNotEmpty ? data : null;
-    } catch (e) {
-      print("Error fetching tipoDocumentos: $e");
-      return null;
-    }
-  }
+  
 
 }

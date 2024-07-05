@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:registro_asistencia_sena_movil/controllers/perfil_controller.dart';
 import 'package:registro_asistencia_sena_movil/models/entrada_salida_response.dart';
 import 'package:registro_asistencia_sena_movil/models/genero_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
@@ -30,6 +31,7 @@ class EditPerfil extends StatefulWidget {
 class _EditPerfilState extends State<EditPerfil> {
   late List<EntradaSalida?> registros;
   final AppServices appServices = AppServices();
+  final PerfilController perfilController = PerfilController();
 
   late TextEditingController _primerNombreController;
   late TextEditingController _segundoNombreController;
@@ -373,7 +375,7 @@ class _EditPerfilState extends State<EditPerfil> {
       String email,
       String authToken) async {
     try {
-      final loginResponse = await apiUpdatePerfil(
+      final loginResponse = await perfilController.apiUpdatePerfil(
           personaID,
           tipoDocumento,
           numeroDocumento,
@@ -409,35 +411,5 @@ class _EditPerfilState extends State<EditPerfil> {
     }
   }
 
-  Future<LoginResponse?> apiUpdatePerfil(
-      String personaID,
-      String tipoDocumento,
-      String numeroDocumento,
-      String primerNombre,
-      String? segundoNombre,
-      String primerApellido,
-      String? segundoApellido,
-      String fechaDeNacimiento,
-      String genero,
-      String email,
-      String authToken) async {
-    try {
-      final data = await appServices.updatePerfil(
-          personaID,
-          tipoDocumento,
-          numeroDocumento,
-          primerNombre,
-          segundoNombre,
-          primerApellido,
-          segundoApellido,
-          fechaDeNacimiento,
-          genero,
-          email,
-          authToken);
-      return data;
-    } catch (e) {
-      print("la otra parada ${e}");
-      // return [];
-    }
-  }
+  
 }
