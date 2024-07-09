@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:registro_asistencia_sena_movil/controllers/login_controller.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/screens/dashboard_screens.dart';
 import 'package:registro_asistencia_sena_movil/screens/inicio_sesion_screens.dart';
@@ -15,7 +16,6 @@ class Header extends StatelessWidget {
   });
 
   final LoginResponse loginResponse;
-
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -69,22 +69,12 @@ class Header extends StatelessWidget {
 }
 
 Future<void> logout(BuildContext context) async {
-  final dio = Dio();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-
-  // Comprobación previa del loginResponse
-  String? loginResponse = prefs.getString('loginResponse');
-  print("Antes de eliminar: loginResponse = $loginResponse");
-
-  await prefs.remove('loginResponse');
-
-  // Comprobación posterior del loginResponse
-  loginResponse = prefs.getString('loginResponse');
-  print("Después de eliminar: loginResponse = $loginResponse");
+  
+  final LoginController logincontroller = LoginController();
 
   try {
-    final response = await dio.post("${Constantes.baseUrl}/logout");
-    if (response.statusCode == 200) {
+    final response = await logincontroller.logout(context);
+    if (response) {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => InicioSesion()),
@@ -96,7 +86,7 @@ Future<void> logout(BuildContext context) async {
         gravity: ToastGravity.TOP,
       );
     } else {
-      print("Error al cerrar sesión: Código de estado ${response.statusCode}");
+      print("Error al cerrar sesión: Código de estado ${response}");
     }
   } catch (e) {
     // Manejo de errores

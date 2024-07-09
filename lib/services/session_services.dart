@@ -13,7 +13,6 @@ class SessionServices {
           data: {'email': email, 'password': password});
       if (response.isSuccesfull()) {
         final loginResponse = LoginResponse.fromJson(response.data);
-        print("si llego a session services");
         return loginResponse;
       }
       return null;

@@ -1,5 +1,6 @@
 
 
+import 'package:flutter/material.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/services/session_services.dart';
 
@@ -12,6 +13,13 @@ class LoginController{
       return data;
     }
     return null;
+  }
+  Future<bool> logout(BuildContext context) async{
+    final data = await sessionServices.logout(context);
+    if (data){
+      return true;
+    }
+    return false;
   }
 
 }
