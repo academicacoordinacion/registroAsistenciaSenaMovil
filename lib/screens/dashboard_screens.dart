@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:registro_asistencia_sena_movil/controllers/ambiente_controller.dart';
+import 'package:registro_asistencia_sena_movil/controllers/ficha_caracterizacion_controller.dart';
 import 'package:registro_asistencia_sena_movil/models/ambiente_response.dart';
 import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
@@ -20,6 +22,8 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   final AppServices appServices = AppServices();
+  final AmbienteController ambienteController = AmbienteController();
+  final FichaCaracterizacionController fichaCaracterizacionController = FichaCaracterizacionController();
 
   @override
   void initState() {
@@ -78,8 +82,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           child: ElevatedButton(
                             onPressed: () {
                               apiIndex(
-                                  widget.loginResponse.persona.instructorId,
-                                  widget.loginResponse.persona.regionalId,
+                                  widget.loginResponse.persona.instructorId.toString(),
+                                  widget.loginResponse.persona.regionalId.toString(),
                                   widget.loginResponse.token,
                                   context);
                             },
@@ -100,7 +104,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   // index ficha caracterizacion
-  void apiIndex(int instructorId, int regionalID,String authToken, BuildContext context) async {
+  void apiIndex(String instructorId, String regionalID,String authToken, BuildContext context) async {
     // print("print de regional id:   ${regionalID}");
     print("print de instructor id:   ${authToken}");
     try {
@@ -146,14 +150,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     }
   }
 
-  Future<List<Ambiente>?> apiCargarAmbientes(int regionalID, String authToken) async {
-    final data = await appServices.getAmbientes(regionalID, authToken);
+  Future<List<Ambiente>?> apiCargarAmbientes(String regionalID, String authToken) async {
+    final data = await ambienteController.getAmbientes(regionalID, authToken);
     return data.isNotEmpty ? data : null;
   }
 
   Future<List<FichaCaracterizacion>?> apiCargarFichasCaracterizacion(
-      int instructorId, String authToken) async {
-    final data = await appServices.getFichasCaracterizacion(instructorId, authToken);
+      String instructorId, String authToken) async {
+    final data = await fichaCaracterizacionController.getFichasCaracterizacion(instructorId, authToken);
     return data.isNotEmpty ? data : null;
   }
 

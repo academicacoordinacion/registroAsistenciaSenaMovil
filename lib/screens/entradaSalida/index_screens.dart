@@ -10,7 +10,6 @@ import 'package:registro_asistencia_sena_movil/models/entrada_salida_response.da
 import 'package:registro_asistencia_sena_movil/models/ficha_caracterizacion_response.dart';
 import 'package:registro_asistencia_sena_movil/models/login_response.dart';
 import 'package:registro_asistencia_sena_movil/screens/entradaSalida/create_screens.dart';
-import 'package:registro_asistencia_sena_movil/services/app_services.dart';
 import 'package:registro_asistencia_sena_movil/widgets/header.dart';
 
 class IndexEntradaSalida extends StatefulWidget {
@@ -33,7 +32,6 @@ class IndexEntradaSalida extends StatefulWidget {
 
 class _IndexEntradaSalidaState extends State<IndexEntradaSalida> {
   late List<EntradaSalida?> registros;
-  final AppServices appServices = AppServices();
   final EntradaSalidaController entradaSalidaController =
       EntradaSalidaController();
   String? eventoSeleccionado;
